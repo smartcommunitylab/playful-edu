@@ -1,0 +1,27 @@
+server:
+  port: 8445
+  servlet:
+    contextPath: /playfuledu
+
+spring:
+  application:
+    name: playful-edu
+  data:
+    mongodb:
+      uri: ${SPRING_DATA_MONGODB_URL:}
+      auto-index-creation: true
+  main:
+    allow-bean-definition-overriding: true      
+  servlet:
+    multipart:
+      max-file-size: ${SPRING_HTTP_MULTIPART_MAX_FILE_SIZE:10MB}
+      max-request-size: ${SPRING_HTTP_MULTIPART_MAX_REQUEST_SIZE:10MB}
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  packagesToScan: eu.fbk.dslab.playful.engine.rest
+  pathsToMatch: /api/**
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true 
