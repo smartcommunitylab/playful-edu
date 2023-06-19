@@ -33,7 +33,7 @@ public class DomainController {
 		return domainRepository.findById(id).orElse(null);
 	}
 	
-	@GetMapping
+	@GetMapping("/api/domains/many")
 	public List<Domain> getMany(@RequestParam String[] ids) {
 		return domainRepository.findByIdIsIn(ids);
 	}
