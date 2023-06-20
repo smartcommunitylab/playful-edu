@@ -56,8 +56,8 @@ public class AppConfig implements WebMvcConfigurer {
                 .version("1.0.0")
                 .license(new License().name("Apache 2.0")))
                 .externalDocs(new ExternalDocumentation()
-                .description("SmartCommunityLab")
-                .url("https://http://www.smartcommunitylab.it/"));
+                .description("DSLab")
+                .url("https://www.smartcommunitylab.it/"));
     }
 
 }
