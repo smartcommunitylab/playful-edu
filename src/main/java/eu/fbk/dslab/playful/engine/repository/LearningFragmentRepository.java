@@ -14,4 +14,5 @@ public interface LearningFragmentRepository extends MongoRepository<LearningFrag
 	public List<LearningFragment> findByIdIsIn(String[] ids);
 	public Page<LearningFragment> findByDomainId(String domainId, Pageable pageRequest);
 	public Page<LearningFragment> findByLearningModuleId(String learningModuleId, Pageable pageRequest);
+	public LearningFragment findFirstByLearningModuleId(String learningModuleId);
 }

@@ -25,7 +25,7 @@ public class ActivityStatus {
 	private String activityId;
 	private String externalActivityId;
 	private String learnerId;
-	private Status status;
+	private Status status = Status.assigned;
 	private Date lastUpdate;
 	
 	public String getId() {
