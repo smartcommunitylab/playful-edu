@@ -26,10 +26,10 @@ public class ActivityController {
 	@GetMapping("/api/activities")
 	public Page<Activity> getList(
 			@RequestParam(required = false) String domainId,
-			@RequestParam(required = false) String learningFragmentId,
+			@RequestParam(required = false) String composedActivityId,
 			@ParameterObject Pageable pageRequest) {
-		if(learningFragmentId != null) {
-			return activityRepository.findByLearningFragmentId(learningFragmentId, pageRequest);
+		if(composedActivityId != null) {
+			return activityRepository.findByComposedActivityId(composedActivityId, pageRequest);
 		}
 		if(domainId != null) {
 			return activityRepository.findByDomainId(domainId, pageRequest);	

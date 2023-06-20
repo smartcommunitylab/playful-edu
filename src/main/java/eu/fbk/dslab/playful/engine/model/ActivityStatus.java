@@ -18,7 +18,13 @@ public class ActivityStatus {
 	private String domainId;
 	@Indexed
 	private String learningScenarioRunId;
+	private String learningScenarioId;
+	private String learningModuleId;
+	private String learningFragmentId;
+	private String composedActivityId;
+	private String activityId;
 	private String externalActivityId;
+	private String learnerId;
 	private Status status;
 	private Date lastUpdate;
 	
@@ -57,6 +63,42 @@ public class ActivityStatus {
 	}
 	public void setLastUpdate(Date lastUpdate) {
 		this.lastUpdate = lastUpdate;
+	}
+	public String getLearningScenarioId() {
+		return learningScenarioId;
+	}
+	public void setLearningScenarioId(String learningScenarioId) {
+		this.learningScenarioId = learningScenarioId;
+	}
+	public String getLearningModuleId() {
+		return learningModuleId;
+	}
+	public void setLearningModuleId(String learningModuleId) {
+		this.learningModuleId = learningModuleId;
+	}
+	public String getLearningFragmentId() {
+		return learningFragmentId;
+	}
+	public void setLearningFragmentId(String learningFragmentId) {
+		this.learningFragmentId = learningFragmentId;
+	}
+	public String getComposedActivityId() {
+		return composedActivityId;
+	}
+	public void setComposedActivityId(String composedActivityId) {
+		this.composedActivityId = composedActivityId;
+	}
+	public String getActivityId() {
+		return activityId;
+	}
+	public void setActivityId(String activityId) {
+		this.activityId = activityId;
+	}
+	public String getLearnerId() {
+		return learnerId;
+	}
+	public void setLearnerId(String learnerId) {
+		this.learnerId = learnerId;
 	}
 
 }

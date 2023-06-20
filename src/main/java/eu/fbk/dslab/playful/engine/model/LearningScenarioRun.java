@@ -1,6 +1,8 @@
 package eu.fbk.dslab.playful.engine.model;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
@@ -16,6 +18,9 @@ public class LearningScenarioRun {
 	private Date lastUpdate;
 	private boolean completed;
 	private String learningScenarioId;
+	private String learnerId;
+	private List<LearningModuleRun> modules = new ArrayList<>();
+	
 	
 	public String getId() {
 		return id;
@@ -52,6 +57,18 @@ public class LearningScenarioRun {
 	}
 	public void setLearningScenarioId(String learningScenarioId) {
 		this.learningScenarioId = learningScenarioId;
+	}
+	public String getLearnerId() {
+		return learnerId;
+	}
+	public void setLearnerId(String learnerId) {
+		this.learnerId = learnerId;
+	}
+	public List<LearningModuleRun> getModules() {
+		return modules;
+	}
+	public void setModules(List<LearningModuleRun> modules) {
+		this.modules = modules;
 	}
 
 }

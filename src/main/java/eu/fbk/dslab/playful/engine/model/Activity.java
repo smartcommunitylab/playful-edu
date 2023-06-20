@@ -18,7 +18,7 @@ public class Activity {
 	@Indexed
 	private String domainId;
 	@Indexed
-	private String learningFragmentId;
+	private String composedActivityId;
 	private String title;
 	private String desc;
 	private Type type;
@@ -90,12 +90,13 @@ public class Activity {
 		this.externalActivityId = externalActivityId;
 	}
 
-	public String getLearningFragmentId() {
-		return learningFragmentId;
+	public String getComposedActivityId() {
+		return composedActivityId;
 	}
 
-	public void setLearningFragmentId(String learningFragmentId) {
-		this.learningFragmentId = learningFragmentId;
+	public void setComposedActivityId(String composedActivityId) {
+		this.composedActivityId = composedActivityId;
 	}
+
 
 }
