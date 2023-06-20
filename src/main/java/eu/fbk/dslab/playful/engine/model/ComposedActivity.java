@@ -1,8 +1,5 @@
 package eu.fbk.dslab.playful.engine.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -20,7 +17,6 @@ public class ComposedActivity {
 	@Indexed
 	private String learningFragmentId;
 	private Type type;
-	private List<Activity> activities = new ArrayList<>();
 	
 	public String getId() {
 		return id;
@@ -45,12 +41,6 @@ public class ComposedActivity {
 	}
 	public void setType(Type type) {
 		this.type = type;
-	}
-	public List<Activity> getActivities() {
-		return activities;
-	}
-	public void setActivities(List<Activity> activities) {
-		this.activities = activities;
 	}
 
 }
