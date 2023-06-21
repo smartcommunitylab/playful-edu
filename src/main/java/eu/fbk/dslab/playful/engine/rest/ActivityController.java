@@ -43,8 +43,8 @@ public class ActivityController {
 	}
 	
 	@GetMapping("/api/activities/many")
-	public List<Activity> getMany(@RequestParam String[] ids) {
-		return activityRepository.findByIdIsIn(ids);
+	public List<Activity> getMany(@RequestParam List<String> ids) {
+		return activityRepository.findByIdIn(ids);
 	}
 	
 	@PostMapping("/api/activities")

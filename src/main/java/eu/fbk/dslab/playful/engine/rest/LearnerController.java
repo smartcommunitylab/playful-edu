@@ -39,8 +39,8 @@ public class LearnerController {
 	}
 	
 	@GetMapping("/api/learners/many")
-	public List<Learner> getMany(@RequestParam String[] ids) {
-		return learnerRepository.findByIdIsIn(ids);
+	public List<Learner> getMany(@RequestParam List<String> ids) {
+		return learnerRepository.findByIdIn(ids);
 	}
 	
 	@PostMapping("/api/learners")

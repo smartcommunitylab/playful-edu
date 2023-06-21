@@ -39,8 +39,8 @@ public class CompetenceController {
 	}
 	
 	@GetMapping("/api/competences/many")
-	public List<Competence> getMany(@RequestParam String[] ids) {
-		return competenceRepository.findByIdIsIn(ids);
+	public List<Competence> getMany(@RequestParam List<String> ids) {
+		return competenceRepository.findByIdIn(ids);
 	}
 	
 	@PostMapping("/api/competences")

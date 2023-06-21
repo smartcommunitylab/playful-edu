@@ -9,5 +9,5 @@ import eu.fbk.dslab.playful.engine.model.Domain;
 
 @Repository
 public interface DomainRepository extends MongoRepository<Domain, String> {
-	public List<Domain> findByIdIsIn(String[] ids);
+	public List<Domain> findByIdIn(List<String> ids);
 }

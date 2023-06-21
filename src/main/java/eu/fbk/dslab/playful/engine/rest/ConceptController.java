@@ -39,8 +39,8 @@ public class ConceptController {
 	}
 	
 	@GetMapping("/api/concepts/many")
-	public List<Concept> getMany(@RequestParam String[] ids) {
-		return conceptRepository.findByIdIsIn(ids);
+	public List<Concept> getMany(@RequestParam List<String> ids) {
+		return conceptRepository.findByIdIn(ids);
 	}
 	
 	@PostMapping("/api/concepts")

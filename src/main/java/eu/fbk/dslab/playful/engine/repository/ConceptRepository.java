@@ -11,6 +11,6 @@ import eu.fbk.dslab.playful.engine.model.Concept;
 
 @Repository
 public interface ConceptRepository extends MongoRepository<Concept, String> {
-	public List<Concept> findByIdIsIn(String[] ids);
+	public List<Concept> findByIdIn(List<String> ids);
 	public Page<Concept> findByDomainId(String domainId, Pageable pageRequest);
 }

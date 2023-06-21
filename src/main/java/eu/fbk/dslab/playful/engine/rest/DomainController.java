@@ -34,8 +34,8 @@ public class DomainController {
 	}
 	
 	@GetMapping("/api/domains/many")
-	public List<Domain> getMany(@RequestParam String[] ids) {
-		return domainRepository.findByIdIsIn(ids);
+	public List<Domain> getMany(@RequestParam List<String> ids) {
+		return domainRepository.findByIdIn(ids);
 	}
 	
 	@PostMapping("/api/domains")

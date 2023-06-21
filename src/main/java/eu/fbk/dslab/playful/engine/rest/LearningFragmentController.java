@@ -43,8 +43,8 @@ public class LearningFragmentController {
 	}
 	
 	@GetMapping("/api/fragments/many")
-	public List<LearningFragment> getMany(@RequestParam String[] ids) {
-		return learningFragmentRepository.findByIdIsIn(ids);
+	public List<LearningFragment> getMany(@RequestParam List<String> ids) {
+		return learningFragmentRepository.findByIdIn(ids);
 	}
 	
 	@PostMapping("/api/fragments")

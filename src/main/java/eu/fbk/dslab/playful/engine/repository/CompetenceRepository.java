@@ -11,6 +11,6 @@ import eu.fbk.dslab.playful.engine.model.Competence;
 
 @Repository
 public interface CompetenceRepository extends MongoRepository<Competence, String> {
-	public List<Competence> findByIdIsIn(String[] ids);
+	public List<Competence> findByIdIn(List<String> ids);
 	public Page<Competence> findByDomainId(String domainId, Pageable pageRequest);
 }

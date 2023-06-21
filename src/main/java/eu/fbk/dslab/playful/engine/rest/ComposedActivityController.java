@@ -43,8 +43,8 @@ public class ComposedActivityController {
 	}
 	
 	@GetMapping("/api/composed-activities/many")
-	public List<ComposedActivity> getMany(@RequestParam String[] ids) {
-		return composedActivityRepository.findByIdIsIn(ids);
+	public List<ComposedActivity> getMany(@RequestParam List<String> ids) {
+		return composedActivityRepository.findByIdIn(ids);
 	}
 	
 	@PostMapping("/api/composed-activities")

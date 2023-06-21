@@ -11,7 +11,7 @@ import eu.fbk.dslab.playful.engine.model.LearningFragment;
 
 @Repository
 public interface LearningFragmentRepository extends MongoRepository<LearningFragment, String> {
-	public List<LearningFragment> findByIdIsIn(String[] ids);
+	public List<LearningFragment> findByIdIn(List<String> ids);
 	public Page<LearningFragment> findByDomainId(String domainId, Pageable pageRequest);
 	public Page<LearningFragment> findByLearningModuleId(String learningModuleId, Pageable pageRequest);
 	public LearningFragment findFirstByLearningModuleId(String learningModuleId);

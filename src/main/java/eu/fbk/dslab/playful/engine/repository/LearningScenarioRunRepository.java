@@ -13,4 +13,5 @@ import eu.fbk.dslab.playful.engine.model.LearningScenarioRun;
 public interface LearningScenarioRunRepository extends MongoRepository<LearningScenarioRun, String> {
 	public List<LearningScenarioRun> findByIdIsIn(String[] ids);
 	public Page<LearningScenarioRun> findByDomainId(String domainId, Pageable pageRequest);
+	public LearningScenarioRun findByLearningScenarioIdAndLearnerId(String learningScenarioId, String learnerId);
 }

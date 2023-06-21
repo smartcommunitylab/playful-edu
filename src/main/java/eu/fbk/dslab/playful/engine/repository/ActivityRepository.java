@@ -11,7 +11,7 @@ import eu.fbk.dslab.playful.engine.model.Activity;
 
 @Repository
 public interface ActivityRepository extends MongoRepository<Activity, String> {
-	public List<Activity> findByIdIsIn(String[] ids);
+	public List<Activity> findByIdIn(List<String> ids);
 	public Page<Activity> findByDomainId(String domainId, Pageable pageRequest);
 	public Page<Activity> findByComposedActivityId(String composedActivityId, Pageable pageRequest);
 }

@@ -39,8 +39,8 @@ public class ExternalActivityController {
 	}
 	
 	@GetMapping("/api/externalActivities/many")
-	public List<ExternalActivity> getMany(@RequestParam String[] ids) {
-		return externalActivityRepository.findByIdIsIn(ids);
+	public List<ExternalActivity> getMany(@RequestParam List<String> ids) {
+		return externalActivityRepository.findByIdIn(ids);
 	}
 	
 	@PostMapping("/api/externalActivities")

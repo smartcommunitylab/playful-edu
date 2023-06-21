@@ -11,6 +11,6 @@ import eu.fbk.dslab.playful.engine.model.ExternalActivity;
 
 @Repository
 public interface ExternalActivityRepository extends MongoRepository<ExternalActivity, String> {
-	public List<ExternalActivity> findByIdIsIn(String[] ids);
+	public List<ExternalActivity> findByIdIn(List<String> ids);
 	public Page<ExternalActivity> findByDomainId(String domainId, Pageable pageRequest);
 }
