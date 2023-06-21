@@ -62,7 +62,19 @@ public class RunningScenarioService {
 	@Autowired
 	LearnerRepository learnerRepository;
 	
-	public void runLearningScenario(String learningScenarioId) {
+	public LearningScenarioRun getLearningScenarioRun(String learningScenarioId, String learnerId) throws HttpClientErrorException {
+		LearningScenarioRun scenarioRun = learningScenarioRunRepository.findByLearningScenarioIdAndLearnerId(learningScenarioId, learnerId);
+		if(scenarioRun != null) {
+			return scenarioRun;
+		}
+		throw new HttpClientErrorException(HttpStatus.NOT_FOUND);
+	}
+	
+	public List<ActivityStatus> getActivityStatus(List<String> ids) {
+		return activityStatusRepository.findByIdIn(ids);
+	}
+	
+	public void runLearningScenario(String learningScenarioId) throws HttpClientErrorException {
 		LearningScenario learningScenario = learningScenarioRepository.findById(learningScenarioId).orElse(null);
 		if(learningScenario != null) {
 			
