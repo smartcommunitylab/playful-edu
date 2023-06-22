@@ -104,6 +104,7 @@ public class RunningScenarioService {
 				scenarioRun.setDomainId(learningScenario.getDomainId());
 				scenarioRun.setLearningScenarioId(learningScenarioId);
 				scenarioRun.setStartingDate(new Date());
+				scenarioRun.setLearnerId(learner.getId());
 				learningScenarioRunRepository.save(scenarioRun);
 				
 				List<LearningModule> modules = learningModuleRepository.findByLearningScenarioId(learningScenarioId);
