@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException;
 
 import eu.fbk.dslab.playful.engine.dto.ComposedActivityRunDto;
+import eu.fbk.dslab.playful.engine.dto.LearningScenarioDto;
 import eu.fbk.dslab.playful.engine.manager.RunningScenarioService;
 import eu.fbk.dslab.playful.engine.model.ActivityStatus;
 import eu.fbk.dslab.playful.engine.model.LearningScenarioRun;
@@ -55,6 +56,16 @@ public class ExtController {
 	public ResponseEntity<LearningScenarioRun> getLearningScenarioRun(String learningScenarioId, String learnerId) {
 		try {
 			LearningScenarioRun dto = runningScenarioService.getLearningScenarioRun(learningScenarioId, learnerId);
+			return ResponseEntity.ok(dto);
+		} catch (HttpClientErrorException e) {
+			return new ResponseEntity<>(null, e.getStatusCode());
+		}		
+	}
+	
+	@GetMapping("/api/ext/learningscenario")
+	public ResponseEntity<LearningScenarioDto> getLearningScenario(String learningScenarioId) {
+		try {
+			LearningScenarioDto dto = runningScenarioService.getLearningScenario(learningScenarioId);
 			return ResponseEntity.ok(dto);
 		} catch (HttpClientErrorException e) {
 			return new ResponseEntity<>(null, e.getStatusCode());
