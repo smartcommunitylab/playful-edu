@@ -5,6 +5,7 @@ import java.util.List;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,9 +26,13 @@ public class ConceptController {
 	
 	@GetMapping("/api/concepts")
 	public Page<Concept> getList(
+			@RequestParam(required = false) List<String> ids,
 			@RequestParam(required = false) String domainId,
 			@ParameterObject Pageable pageRequest) {
-		if(domainId != null) {
+		if(ids != null) {
+			List<Concept> list = conceptRepository.findByIdIn(ids);
+			return new PageImpl<>(list);
+		} else if(domainId != null) {
 			return conceptRepository.findByDomainId(domainId, pageRequest);	
 		}
 		return conceptRepository.findAll(pageRequest);
@@ -36,11 +41,6 @@ public class ConceptController {
 	@GetMapping("/api/concepts/{id}")
 	public Concept getOne(@PathVariable String id) {
 		return conceptRepository.findById(id).orElse(null);
-	}
-	
-	@GetMapping("/api/concepts/many")
-	public List<Concept> getMany(@RequestParam List<String> ids) {
-		return conceptRepository.findByIdIn(ids);
 	}
 	
 	@PostMapping("/api/concepts")

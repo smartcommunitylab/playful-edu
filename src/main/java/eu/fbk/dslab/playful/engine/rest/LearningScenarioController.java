@@ -5,6 +5,7 @@ import java.util.List;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,9 +26,13 @@ public class LearningScenarioController {
 	
 	@GetMapping("/api/scenarios")
 	public Page<LearningScenario> getList(
+			@RequestParam(required = false) List<String> ids,
 			@RequestParam(required = false) String domainId,
 			@ParameterObject Pageable pageRequest) {
-		if(domainId != null) {
+		if(ids != null) {
+			List<LearningScenario> list = learningScenarioRepository.findByIdIn(ids);
+			return new PageImpl<>(list);
+		} else if(domainId != null) {
 			return learningScenarioRepository.findByDomainId(domainId, pageRequest); 
 		}
 		return learningScenarioRepository.findAll(pageRequest);
@@ -36,11 +41,6 @@ public class LearningScenarioController {
 	@GetMapping("/api/scenarios/{id}")
 	public LearningScenario getOne(@PathVariable String id) {
 		return learningScenarioRepository.findById(id).orElse(null);
-	}
-	
-	@GetMapping("/api/scenarios/many")
-	public List<LearningScenario> getMany(@RequestParam List<String> ids) {
-		return learningScenarioRepository.findByIdIn(ids);
 	}
 	
 	@PostMapping("/api/scenarios")

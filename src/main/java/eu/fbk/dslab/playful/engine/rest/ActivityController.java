@@ -2,10 +2,9 @@ package eu.fbk.dslab.playful.engine.rest;
 
 import java.util.List;
 
-import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,26 +24,22 @@ public class ActivityController {
 	
 	@GetMapping("/api/activities")
 	public Page<Activity> getList(
-			@RequestParam(required = false) String domainId,
-			@RequestParam(required = false) String composedActivityId,
-			@ParameterObject Pageable pageRequest) {
-		if(composedActivityId != null) {
-			return activityRepository.findByComposedActivityId(composedActivityId, pageRequest);
+			@RequestParam(required = false) List<String> ids,
+			@RequestParam(required = false) String composedActivityId) {
+		List<Activity> list = null;
+		if(ids != null) {
+			list = activityRepository.findByIdIn(ids);
+		} else if(composedActivityId != null) {
+			list = activityRepository.findByComposedActivityId(composedActivityId);
+		} else {
+			list = activityRepository.findAll();
 		}
-		if(domainId != null) {
-			return activityRepository.findByDomainId(domainId, pageRequest);	
-		}
-		return activityRepository.findAll(pageRequest);
+		return new PageImpl<>(list);
 	}
 	
 	@GetMapping("/api/activities/{id}")
 	public Activity getOne(@PathVariable String id) {
 		return activityRepository.findById(id).orElse(null);
-	}
-	
-	@GetMapping("/api/activities/many")
-	public List<Activity> getMany(@RequestParam List<String> ids) {
-		return activityRepository.findByIdIn(ids);
 	}
 	
 	@PostMapping("/api/activities")

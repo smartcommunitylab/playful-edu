@@ -5,6 +5,7 @@ import java.util.List;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,9 +26,13 @@ public class ExternalActivityController {
 	
 	@GetMapping("/api/externalActivities")
 	public Page<ExternalActivity> getList(
+			@RequestParam(required = false) List<String> ids,
 			@RequestParam(required = false) String domainId,
 			@ParameterObject Pageable pageRequest) {
-		if(domainId != null) {
+		if(ids != null) {
+			List<ExternalActivity> list = externalActivityRepository.findByIdIn(ids);
+			return new PageImpl<>(list);
+		} else if(domainId != null) {
 			return externalActivityRepository.findByDomainId(domainId, pageRequest); 
 		}
 		return externalActivityRepository.findAll(pageRequest);
@@ -36,11 +41,6 @@ public class ExternalActivityController {
 	@GetMapping("/api/externalActivities/{id}")
 	public ExternalActivity getOne(@PathVariable String id) {
 		return externalActivityRepository.findById(id).orElse(null);
-	}
-	
-	@GetMapping("/api/externalActivities/many")
-	public List<ExternalActivity> getMany(@RequestParam List<String> ids) {
-		return externalActivityRepository.findByIdIn(ids);
 	}
 	
 	@PostMapping("/api/externalActivities")

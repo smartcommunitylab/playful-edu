@@ -5,6 +5,7 @@ import java.util.List;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,9 +26,13 @@ public class EducatorController {
 	
 	@GetMapping("/api/educators")
 	public Page<Educator> getList(
+			@RequestParam(required = false) List<String> ids,
 			@RequestParam(required = false) String domainId,
 			@ParameterObject Pageable pageRequest) {
-		if(domainId != null) {
+		if(ids != null) {
+			List<Educator> list = educatorRepository.findByIdIn(ids);
+			return new PageImpl<>(list);
+		} else if(domainId != null) {
 			return educatorRepository.findByDomainId(domainId, pageRequest); 
 		}
 		return educatorRepository.findAll(pageRequest);
@@ -36,11 +41,6 @@ public class EducatorController {
 	@GetMapping("/api/educators/{id}")
 	public Educator getOne(@PathVariable String id) {
 		return educatorRepository.findById(id).orElse(null);
-	}
-	
-	@GetMapping("/api/educators/many")
-	public List<Educator> getMany(@RequestParam List<String> ids) {
-		return educatorRepository.findByIdIn(ids);
 	}
 	
 	@PostMapping("/api/educators")

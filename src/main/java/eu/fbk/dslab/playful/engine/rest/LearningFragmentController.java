@@ -2,10 +2,9 @@ package eu.fbk.dslab.playful.engine.rest;
 
 import java.util.List;
 
-import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,26 +24,22 @@ public class LearningFragmentController {
 	
 	@GetMapping("/api/fragments")
 	public Page<LearningFragment> getList(
-			@RequestParam(required = false) String domainId,
-			@RequestParam(required = false) String learningModuleId,
-			@ParameterObject Pageable pageRequest) {
-		if(learningModuleId != null) {
-			return learningFragmentRepository.findByLearningModuleId(learningModuleId, pageRequest);
+			@RequestParam(required = false) List<String> ids,
+			@RequestParam(required = false) String learningModuleId) {
+		List<LearningFragment> list = null;
+		if(ids != null) {
+			list = learningFragmentRepository.findByIdIn(ids);
+		} else if(learningModuleId != null) {
+			list = learningFragmentRepository.findByLearningModuleId(learningModuleId);
+		} else {
+			list = learningFragmentRepository.findAll(); 
 		}
-		if(domainId != null) {
-			return learningFragmentRepository.findByDomainId(domainId, pageRequest); 
-		}
-		return learningFragmentRepository.findAll(pageRequest);
+		return new PageImpl<>(list);
 	}
 	
 	@GetMapping("/api/fragments/{id}")
 	public LearningFragment getOne(@PathVariable String id) {
 		return learningFragmentRepository.findById(id).orElse(null);
-	}
-	
-	@GetMapping("/api/fragments/many")
-	public List<LearningFragment> getMany(@RequestParam List<String> ids) {
-		return learningFragmentRepository.findByIdIn(ids);
 	}
 	
 	@PostMapping("/api/fragments")

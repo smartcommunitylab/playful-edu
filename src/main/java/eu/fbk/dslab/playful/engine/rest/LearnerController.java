@@ -5,6 +5,7 @@ import java.util.List;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,9 +26,13 @@ public class LearnerController {
 	
 	@GetMapping("/api/learners")
 	public Page<Learner> getList(
+			@RequestParam(required = false) List<String> ids,
 			@RequestParam(required = false) String domainId,
 			@ParameterObject Pageable pageRequest) {
-		if(domainId != null) {
+		if(ids != null) {
+			List<Learner> list = learnerRepository.findByIdIn(ids);
+			return new PageImpl<>(list);
+		} else if(domainId != null) {
 			return learnerRepository.findByDomainId(domainId, pageRequest); 
 		}
 		return learnerRepository.findAll(pageRequest);
@@ -36,11 +41,6 @@ public class LearnerController {
 	@GetMapping("/api/learners/{id}")
 	public Learner getOne(@PathVariable String id) {
 		return learnerRepository.findById(id).orElse(null);
-	}
-	
-	@GetMapping("/api/learners/many")
-	public List<Learner> getMany(@RequestParam List<String> ids) {
-		return learnerRepository.findByIdIn(ids);
 	}
 	
 	@PostMapping("/api/learners")

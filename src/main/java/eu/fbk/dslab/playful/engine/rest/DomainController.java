@@ -5,6 +5,7 @@ import java.util.List;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,18 +25,19 @@ public class DomainController {
 	DomainRepository domainRepository;
 	
 	@GetMapping("/api/domains")
-	public Page<Domain> getList(@ParameterObject Pageable pageRequest) {
+	public Page<Domain> getList(
+			@RequestParam(required = false) List<String> ids,
+			@ParameterObject Pageable pageRequest) {
+		if(ids != null) {
+			List<Domain> list = domainRepository.findByIdIn(ids);
+			return new PageImpl<>(list);
+		}
 		return domainRepository.findAll(pageRequest);
 	}
 	
 	@GetMapping("/api/domains/{id}")
 	public Domain getOne(@PathVariable String id) {
 		return domainRepository.findById(id).orElse(null);
-	}
-	
-	@GetMapping("/api/domains/many")
-	public List<Domain> getMany(@RequestParam List<String> ids) {
-		return domainRepository.findByIdIn(ids);
 	}
 	
 	@PostMapping("/api/domains")

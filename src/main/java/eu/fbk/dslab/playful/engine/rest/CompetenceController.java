@@ -5,6 +5,7 @@ import java.util.List;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,9 +26,13 @@ public class CompetenceController {
 	
 	@GetMapping("/api/competences")
 	public Page<Competence> getList(
+			@RequestParam(required = false) List<String> ids,
 			@RequestParam(required = false) String domainId,
 			@ParameterObject Pageable pageRequest) {
-		if(domainId != null) {
+		if(ids != null) {
+			List<Competence> list = competenceRepository.findByIdIn(ids);
+			return new PageImpl<>(list);
+		} else if(domainId != null) {
 			return competenceRepository.findByDomainId(domainId, pageRequest); 
 		}
 		return competenceRepository.findAll(pageRequest);
@@ -36,11 +41,6 @@ public class CompetenceController {
 	@GetMapping("/api/competences/{id}")
 	public Competence getOne(@PathVariable String id) {
 		return competenceRepository.findById(id).orElse(null);
-	}
-	
-	@GetMapping("/api/competences/many")
-	public List<Competence> getMany(@RequestParam List<String> ids) {
-		return competenceRepository.findByIdIn(ids);
 	}
 	
 	@PostMapping("/api/competences")
