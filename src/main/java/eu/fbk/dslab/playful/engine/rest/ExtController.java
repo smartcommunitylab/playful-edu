@@ -23,7 +23,8 @@ public class ExtController {
 	RunningScenarioService runningScenarioService;
 	
 	@PutMapping("/api/ext/learningscenario/{id}/run")
-	public ResponseEntity<Void> runLearningScenario(@PathVariable String id) {
+	public ResponseEntity<Void> runLearningScenario(
+			@PathVariable String id) {
 		try {
 			runningScenarioService.runLearningScenario(id);
 			return ResponseEntity.ok(null);
@@ -33,7 +34,9 @@ public class ExtController {
 	}
 	
 	@PutMapping("/api/ext/activitystatus/{id}/status")
-	public ResponseEntity<Void> changeActivityStatus(@PathVariable String id, @RequestParam String status) {
+	public ResponseEntity<Void> changeActivityStatus(
+			@PathVariable String id, 
+			@RequestParam String status) {
 		try {
 			runningScenarioService.changeActivityStatus(id, status);
 			return ResponseEntity.ok(null);
@@ -43,7 +46,9 @@ public class ExtController {
 	}
 	
 	@GetMapping("/api/ext/composedactivity/next")
-	public ResponseEntity<ComposedActivityRunDto> getNextActivity(String learningScenarioId, String learnerId) {
+	public ResponseEntity<ComposedActivityRunDto> getNextActivity(
+			@RequestParam String learningScenarioId, 
+			@RequestParam String learnerId) {
 		try {
 			ComposedActivityRunDto dto = runningScenarioService.getNextActivity(learningScenarioId, learnerId);
 			return ResponseEntity.ok(dto);
@@ -53,7 +58,9 @@ public class ExtController {
 	}
 	
 	@GetMapping("/api/ext/learningscenariorun")
-	public ResponseEntity<LearningScenarioRun> getLearningScenarioRun(String learningScenarioId, String learnerId) {
+	public ResponseEntity<LearningScenarioRun> getLearningScenarioRun(
+			@RequestParam String learningScenarioId, 
+			@RequestParam String learnerId) {
 		try {
 			LearningScenarioRun dto = runningScenarioService.getLearningScenarioRun(learningScenarioId, learnerId);
 			return ResponseEntity.ok(dto);
@@ -63,7 +70,8 @@ public class ExtController {
 	}
 	
 	@GetMapping("/api/ext/learningscenario")
-	public ResponseEntity<LearningScenarioDto> getLearningScenario(String learningScenarioId) {
+	public ResponseEntity<LearningScenarioDto> getLearningScenario(
+			@RequestParam String learningScenarioId) {
 		try {
 			LearningScenarioDto dto = runningScenarioService.getLearningScenario(learningScenarioId);
 			return ResponseEntity.ok(dto);
@@ -73,7 +81,8 @@ public class ExtController {
 	}
 	
 	@GetMapping("/api/ext/activitystatus")
-	public ResponseEntity<List<ActivityStatus>> getActivityStatus(List<String> ids) {
+	public ResponseEntity<List<ActivityStatus>> getActivityStatus(
+			@RequestParam List<String> ids) {
 		return ResponseEntity.ok(runningScenarioService.getActivityStatus(ids));
 	}
 
