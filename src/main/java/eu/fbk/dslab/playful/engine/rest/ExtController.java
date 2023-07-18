@@ -32,7 +32,7 @@ public class ExtController {
 		}		
 	}
 	
-	@PutMapping("/api/ext/activitystatus/{status")
+	@PutMapping("/api/ext/activitystatus/status")
 	public ResponseEntity<Void> changeActivityStatus(
 			@RequestParam String id, 
 			@RequestParam String status) {
