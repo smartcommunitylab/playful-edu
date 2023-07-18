@@ -46,10 +46,11 @@ public class ExtController {
 	
 	@GetMapping("/api/ext/composedactivity/next")
 	public ResponseEntity<ComposedActivityRunDto> getNextActivity(
+			@RequestParam String domainId,
 			@RequestParam String learningScenarioId, 
 			@RequestParam String nickname) {
 		try {
-			ComposedActivityRunDto dto = runningScenarioService.getNextActivity(learningScenarioId, nickname);
+			ComposedActivityRunDto dto = runningScenarioService.getNextActivity(domainId, learningScenarioId, nickname);
 			return ResponseEntity.ok(dto);
 		} catch (HttpClientErrorException e) {
 			return new ResponseEntity<>(null, e.getStatusCode());
@@ -58,10 +59,11 @@ public class ExtController {
 	
 	@GetMapping("/api/ext/learningscenariorun")
 	public ResponseEntity<LearningScenarioRun> getLearningScenarioRun(
+			@RequestParam String domainId,
 			@RequestParam String learningScenarioId, 
 			@RequestParam String nickname) {
 		try {
-			LearningScenarioRun dto = runningScenarioService.getLearningScenarioRun(learningScenarioId, nickname);
+			LearningScenarioRun dto = runningScenarioService.getLearningScenarioRun(domainId, learningScenarioId, nickname);
 			return ResponseEntity.ok(dto);
 		} catch (HttpClientErrorException e) {
 			return new ResponseEntity<>(null, e.getStatusCode());

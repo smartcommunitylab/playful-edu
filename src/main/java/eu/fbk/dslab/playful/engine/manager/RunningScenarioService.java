@@ -81,14 +81,14 @@ public class RunningScenarioService {
 	@Autowired
 	ConceptRepository conceptRepository;
 	
-	public LearningScenarioRun getLearningScenarioRun(String learningScenarioId, String nickname) throws HttpClientErrorException {
-		Learner learner = learnerRepository.findOneByNickname(nickname);
+	public LearningScenarioRun getLearningScenarioRun(String domainId, String learningScenarioId, String nickname) throws HttpClientErrorException {
+		Learner learner = learnerRepository.findOneByDomainIdAndNickname(domainId, nickname);
 		if(learner != null) {
 			LearningScenarioRun scenarioRun = learningScenarioRunRepository.findByLearningScenarioIdAndLearnerId(learningScenarioId, learner.getId());
 			if(scenarioRun != null) {
 				return scenarioRun;
 			}			
-		}
+		}			
 		throw new HttpClientErrorException(HttpStatus.NOT_FOUND);
 	}
 	
@@ -157,8 +157,8 @@ public class RunningScenarioService {
 		}
 	}
 	
-	public ComposedActivityRunDto getNextActivity(String learningScenarioId, String nickname) throws HttpClientErrorException {
-		Learner learner = learnerRepository.findOneByNickname(nickname);
+	public ComposedActivityRunDto getNextActivity(String domainId, String learningScenarioId, String nickname) throws HttpClientErrorException {
+		Learner learner = learnerRepository.findOneByDomainIdAndNickname(domainId, nickname);
 		if(learner != null) {
 			LearningScenarioRun scenarioRun = learningScenarioRunRepository.findByLearningScenarioIdAndLearnerId(learningScenarioId, learner.getId());
 			if(scenarioRun != null) {
