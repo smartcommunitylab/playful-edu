@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,9 +21,9 @@ public class ExtController {
 	@Autowired
 	RunningScenarioService runningScenarioService;
 	
-	@PutMapping("/api/ext/learningscenario/{id}/run")
+	@PutMapping("/api/ext/learningscenario/run")
 	public ResponseEntity<Void> runLearningScenario(
-			@PathVariable String id) {
+			@RequestParam String id) {
 		try {
 			runningScenarioService.runLearningScenario(id);
 			return ResponseEntity.ok(null);
@@ -33,9 +32,9 @@ public class ExtController {
 		}		
 	}
 	
-	@PutMapping("/api/ext/activitystatus/{id}/status")
+	@PutMapping("/api/ext/activitystatus/{status")
 	public ResponseEntity<Void> changeActivityStatus(
-			@PathVariable String id, 
+			@RequestParam String id, 
 			@RequestParam String status) {
 		try {
 			runningScenarioService.changeActivityStatus(id, status);
@@ -48,9 +47,9 @@ public class ExtController {
 	@GetMapping("/api/ext/composedactivity/next")
 	public ResponseEntity<ComposedActivityRunDto> getNextActivity(
 			@RequestParam String learningScenarioId, 
-			@RequestParam String learnerId) {
+			@RequestParam String nickname) {
 		try {
-			ComposedActivityRunDto dto = runningScenarioService.getNextActivity(learningScenarioId, learnerId);
+			ComposedActivityRunDto dto = runningScenarioService.getNextActivity(learningScenarioId, nickname);
 			return ResponseEntity.ok(dto);
 		} catch (HttpClientErrorException e) {
 			return new ResponseEntity<>(null, e.getStatusCode());
@@ -60,9 +59,9 @@ public class ExtController {
 	@GetMapping("/api/ext/learningscenariorun")
 	public ResponseEntity<LearningScenarioRun> getLearningScenarioRun(
 			@RequestParam String learningScenarioId, 
-			@RequestParam String learnerId) {
+			@RequestParam String nickname) {
 		try {
-			LearningScenarioRun dto = runningScenarioService.getLearningScenarioRun(learningScenarioId, learnerId);
+			LearningScenarioRun dto = runningScenarioService.getLearningScenarioRun(learningScenarioId, nickname);
 			return ResponseEntity.ok(dto);
 		} catch (HttpClientErrorException e) {
 			return new ResponseEntity<>(null, e.getStatusCode());

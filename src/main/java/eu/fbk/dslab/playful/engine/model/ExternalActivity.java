@@ -28,6 +28,7 @@ public class ExternalActivity {
 	private String title;
 	private String desc;
 	private String language;
+	private String extId;
 	private String extUrl;
 	private Type type;
 	private Tool tool;
@@ -122,6 +123,14 @@ public class ExternalActivity {
 
 	public void setEffects(List<String> effects) {
 		this.effects = effects;
+	}
+
+	public String getExtId() {
+		return extId;
+	}
+
+	public void setExtId(String extId) {
+		this.extId = extId;
 	}
 
 

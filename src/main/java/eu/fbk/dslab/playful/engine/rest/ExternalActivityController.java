@@ -24,7 +24,7 @@ public class ExternalActivityController {
 	@Autowired
 	ExternalActivityRepository externalActivityRepository;
 	
-	@GetMapping("/api/externalActivities")
+	@GetMapping("/api/external-activities")
 	public Page<ExternalActivity> getList(
 			@RequestParam(required = false) List<String> ids,
 			@RequestParam(required = false) String domainId,
@@ -38,24 +38,24 @@ public class ExternalActivityController {
 		return externalActivityRepository.findAll(pageRequest);
 	}
 	
-	@GetMapping("/api/externalActivities/{id}")
+	@GetMapping("/api/external-activities/{id}")
 	public ExternalActivity getOne(@PathVariable String id) {
 		return externalActivityRepository.findById(id).orElse(null);
 	}
 	
-	@PostMapping("/api/externalActivities")
+	@PostMapping("/api/external-activities")
 	public ExternalActivity create(@RequestBody ExternalActivity externalActivity) {
 		return externalActivityRepository.save(externalActivity);
 	}
 	
-	@PutMapping("/api/externalActivities/{id}")
+	@PutMapping("/api/external-activities/{id}")
 	public ExternalActivity update(@PathVariable String id,
 			@RequestBody ExternalActivity externalActivity) {
 		externalActivity.setId(id);
 		return externalActivityRepository.save(externalActivity);
 	}
 	
-	@DeleteMapping("/api/externalActivities/{id}")
+	@DeleteMapping("/api/external-activities/{id}")
 	public ExternalActivity delete(@PathVariable String id) {
 		ExternalActivity externalActivity = externalActivityRepository.findById(id).orElse(null);
 		if(externalActivity != null) {

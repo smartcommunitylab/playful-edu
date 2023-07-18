@@ -81,10 +81,13 @@ public class RunningScenarioService {
 	@Autowired
 	ConceptRepository conceptRepository;
 	
-	public LearningScenarioRun getLearningScenarioRun(String learningScenarioId, String learnerId) throws HttpClientErrorException {
-		LearningScenarioRun scenarioRun = learningScenarioRunRepository.findByLearningScenarioIdAndLearnerId(learningScenarioId, learnerId);
-		if(scenarioRun != null) {
-			return scenarioRun;
+	public LearningScenarioRun getLearningScenarioRun(String learningScenarioId, String nickname) throws HttpClientErrorException {
+		Learner learner = learnerRepository.findOneByNickname(nickname);
+		if(learner != null) {
+			LearningScenarioRun scenarioRun = learningScenarioRunRepository.findByLearningScenarioIdAndLearnerId(learningScenarioId, learner.getId());
+			if(scenarioRun != null) {
+				return scenarioRun;
+			}			
 		}
 		throw new HttpClientErrorException(HttpStatus.NOT_FOUND);
 	}
@@ -154,22 +157,25 @@ public class RunningScenarioService {
 		}
 	}
 	
-	public ComposedActivityRunDto getNextActivity(String learningScenarioId, String learnerId) throws HttpClientErrorException {
-		LearningScenarioRun scenarioRun = learningScenarioRunRepository.findByLearningScenarioIdAndLearnerId(learningScenarioId, learnerId);
-		if(scenarioRun != null) {
-			for(LearningModuleRun moduleRun : scenarioRun.getModules()) {
-				for(ComposedActivityRun activityRun : moduleRun.getFragment().getComposedActivities()) {
-					ComposedActivityRunDto activityRunDto = new ComposedActivityRunDto(activityRun);					
-					List<ActivityStatus> list = activityStatusRepository.findByIdIn(activityRun.getActivityStatusIds());
-					boolean found = false;
-					for(ActivityStatus activityStatus : list) {
-						if(activityStatus.getStatus().equals(Status.assigned)) {
-							found = true;
-							activityRunDto.getActivities().add(activityStatus);
+	public ComposedActivityRunDto getNextActivity(String learningScenarioId, String nickname) throws HttpClientErrorException {
+		Learner learner = learnerRepository.findOneByNickname(nickname);
+		if(learner != null) {
+			LearningScenarioRun scenarioRun = learningScenarioRunRepository.findByLearningScenarioIdAndLearnerId(learningScenarioId, learner.getId());
+			if(scenarioRun != null) {
+				for(LearningModuleRun moduleRun : scenarioRun.getModules()) {
+					for(ComposedActivityRun activityRun : moduleRun.getFragment().getComposedActivities()) {
+						ComposedActivityRunDto activityRunDto = new ComposedActivityRunDto(activityRun);					
+						List<ActivityStatus> list = activityStatusRepository.findByIdIn(activityRun.getActivityStatusIds());
+						boolean found = false;
+						for(ActivityStatus activityStatus : list) {
+							if(activityStatus.getStatus().equals(Status.assigned)) {
+								found = true;
+								activityRunDto.getActivities().add(activityStatus);
+							}
 						}
-					}
-					if(found) {
-						return activityRunDto;
+						if(found) {
+							return activityRunDto;
+						}
 					}
 				}
 			}

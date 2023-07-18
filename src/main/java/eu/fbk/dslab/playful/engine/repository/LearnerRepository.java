@@ -13,4 +13,5 @@ import eu.fbk.dslab.playful.engine.model.Learner;
 public interface LearnerRepository extends MongoRepository<Learner, String> {
 	public List<Learner> findByIdIn(List<String> ids);
 	public Page<Learner> findByDomainId(String domainId, Pageable pageRequest);
+	public Learner findOneByNickname(String nickname);
 }

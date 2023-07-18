@@ -11,8 +11,10 @@ public class Educator {
 	@Indexed
 	private String domainId;	
 	private String firstname;
-	private String lastName;
+	private String lastname;
 	private String email;
+	@Indexed
+	private String nickname;
 	
 	public String getId() {
 		return id;
@@ -38,20 +40,28 @@ public class Educator {
 		this.firstname = firstname;
 	}
 
-	public String getLastName() {
-		return lastName;
-	}
-
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
-	}
-
 	public String getEmail() {
 		return email;
 	}
 
 	public void setEmail(String email) {
 		this.email = email;
+	}
+
+	public String getLastname() {
+		return lastname;
+	}
+
+	public void setLastname(String lastname) {
+		this.lastname = lastname;
+	}
+
+	public String getNickname() {
+		return nickname;
+	}
+
+	public void setNickname(String nickname) {
+		this.nickname = nickname;
 	}
 
 
