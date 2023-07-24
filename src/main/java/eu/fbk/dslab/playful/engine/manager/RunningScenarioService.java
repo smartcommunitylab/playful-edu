@@ -1,11 +1,15 @@
 package eu.fbk.dslab.playful.engine.manager;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
@@ -110,7 +114,8 @@ public class RunningScenarioService {
 				scenarioRun.setLearnerId(learner.getId());
 				learningScenarioRunRepository.save(scenarioRun);
 				
-				List<LearningModule> modules = learningModuleRepository.findByLearningScenarioId(learningScenarioId);
+				List<LearningModule> modules = learningModuleRepository.findByLearningScenarioId(learningScenarioId, 
+						Sort.by(Direction.ASC, "position"));
 				for(LearningModule module : modules) {
 					LearningModuleRun moduleRun = new LearningModuleRun();
 					moduleRun.setLearningModuleId(module.getId());
@@ -122,7 +127,8 @@ public class RunningScenarioService {
 						fragmentRun.setLearningFragmentId(fragment.getId());
 						moduleRun.setFragment(fragmentRun);
 						
-						List<ComposedActivity> composedActivities = composedActivityRepository.findByLearningFragmentId(fragment.getId());
+						List<ComposedActivity> composedActivities = composedActivityRepository.findByLearningFragmentId(fragment.getId(), 
+								Sort.by(Direction.ASC, "position"));
 						for(ComposedActivity composedActivity : composedActivities) {
 							ComposedActivityRun composedActivityRun = new ComposedActivityRun();
 							composedActivityRun.setComposedActivityId(composedActivity.getId());
@@ -130,6 +136,11 @@ public class RunningScenarioService {
 							fragmentRun.getComposedActivities().add(composedActivityRun);
 							
 							List<Activity> activities = activityRepository.findByComposedActivityId(composedActivity.getId());
+							if(composedActivity.getType().equals(ComposedActivity.Type.list)) {
+								Comparator<Activity> compareByPosition = 
+										(Activity o1, Activity o2) -> Integer.compare(o1.getPosition(), o2.getPosition());
+								Collections.sort(activities, compareByPosition);
+							}
 							for(Activity activity : activities) {
 								if(activity.getType().equals(Type.concrete)) {
 									ActivityStatus activityStatus = new ActivityStatus();
@@ -204,7 +215,8 @@ public class RunningScenarioService {
 			List<Educator> educators = educatorRepository.findByIdIn(learningScenario.getEducators());
 			scenarioDto.getEducators().addAll(educators);
 			
-			List<LearningModule> modules = learningModuleRepository.findByLearningScenarioId(learningScenarioId);
+			List<LearningModule> modules = learningModuleRepository.findByLearningScenarioId(learningScenarioId, 
+					Sort.by(Direction.ASC, "position"));
 			for(LearningModule module : modules) {
 				LearningModuleDto moduleDto = new LearningModuleDto(module);
 				scenarioDto.getModules().add(moduleDto);
@@ -213,7 +225,8 @@ public class RunningScenarioService {
 				LearningFragmentDto fragmentDto = new LearningFragmentDto(fragment);
 				moduleDto.setFragment(fragmentDto);
 				
-				List<ComposedActivity> composedActivities = composedActivityRepository.findByLearningFragmentId(fragment.getId());
+				List<ComposedActivity> composedActivities = composedActivityRepository.findByLearningFragmentId(fragment.getId(), 
+						Sort.by(Direction.ASC, "position"));
 				for(ComposedActivity composedActivity : composedActivities) {
 					ComposedActivityDto composedActivityDto = new ComposedActivityDto(composedActivity);
 					fragmentDto.getComposedActivities().add(composedActivityDto);

@@ -16,6 +16,7 @@ public class ComposedActivity {
 	private String domainId;
 	@Indexed
 	private String learningFragmentId;
+	private int position;
 	private String title;
 	private Type type;
 	
@@ -48,6 +49,12 @@ public class ComposedActivity {
 	}
 	public void setTitle(String title) {
 		this.title = title;
+	}
+	public int getPosition() {
+		return position;
+	}
+	public void setPosition(int position) {
+		this.position = position;
 	}
 
 }
