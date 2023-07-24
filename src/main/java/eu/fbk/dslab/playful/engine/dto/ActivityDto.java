@@ -13,7 +13,6 @@ public class ActivityDto {
 	private String title;
 	private String desc;
 	private Type type;
-	private boolean group;
 	private List<Concept> goals = new ArrayList<>();
 	private ExternalActivity externalActivity;
 	
@@ -24,7 +23,6 @@ public class ActivityDto {
 		this.title = activity.getTitle();
 		this.desc = activity.getDesc();
 		this.type = activity.getType();
-		this.group = activity.isGroup();
 	}
 
 	public String getId() {
@@ -57,14 +55,6 @@ public class ActivityDto {
 
 	public void setType(Type type) {
 		this.type = type;
-	}
-
-	public boolean isGroup() {
-		return group;
-	}
-
-	public void setGroup(boolean group) {
-		this.group = group;
 	}
 
 	public List<Concept> getGoals() {

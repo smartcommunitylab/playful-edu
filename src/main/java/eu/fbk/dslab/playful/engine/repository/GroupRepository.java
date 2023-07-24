@@ -10,5 +10,5 @@ import eu.fbk.dslab.playful.engine.model.Group;
 @Repository
 public interface GroupRepository extends MongoRepository<Group, String> {
 	public List<Group> findByIdIn(List<String> ids);
-	public Group findOneByExtId(String extId);
+	public Group findOneByDomainIdAndExtId(String domainId, String extId);
 }

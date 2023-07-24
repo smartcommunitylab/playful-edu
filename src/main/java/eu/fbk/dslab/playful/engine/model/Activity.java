@@ -22,7 +22,6 @@ public class Activity {
 	private String title;
 	private String desc;
 	private Type type;
-	private boolean group;
 	private int position;
 	private List<String> goals = new ArrayList<>();
 	private String externalActivityId;
@@ -66,14 +65,6 @@ public class Activity {
 
 	public void setType(Type type) {
 		this.type = type;
-	}
-
-	public boolean isGroup() {
-		return group;
-	}
-
-	public void setGroup(boolean group) {
-		this.group = group;
 	}
 
 	public List<String> getGoals() {
