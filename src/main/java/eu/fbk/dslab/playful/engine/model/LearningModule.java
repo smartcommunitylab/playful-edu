@@ -18,6 +18,7 @@ public class LearningModule {
 	private String domainId;
 	@Indexed
 	private String learningScenarioId;
+	private int position;
 	private String title;
 	private String desc;
 	private Level level;
@@ -86,6 +87,14 @@ public class LearningModule {
 
 	public void setLearningScenarioId(String learningScenarioId) {
 		this.learningScenarioId = learningScenarioId;
+	}
+
+	public int getPosition() {
+		return position;
+	}
+
+	public void setPosition(int position) {
+		this.position = position;
 	}
 
 

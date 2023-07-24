@@ -10,7 +10,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document(collection="activities")
 public class Activity {
 	public static enum Type {
-		concrete, abstr
+		concrete, abstr, group
 	};
 	
 	@Id
@@ -23,8 +23,10 @@ public class Activity {
 	private String desc;
 	private Type type;
 	private boolean group;
+	private int position;
 	private List<String> goals = new ArrayList<>();
 	private String externalActivityId;
+	private String groupCorrelator;
 
 	public String getId() {
 		return id;
@@ -96,6 +98,22 @@ public class Activity {
 
 	public void setComposedActivityId(String composedActivityId) {
 		this.composedActivityId = composedActivityId;
+	}
+
+	public int getPosition() {
+		return position;
+	}
+
+	public void setPosition(int position) {
+		this.position = position;
+	}
+
+	public String getGroupCorrelator() {
+		return groupCorrelator;
+	}
+
+	public void setGroupCorrelator(String groupCorrelator) {
+		this.groupCorrelator = groupCorrelator;
 	}
 
 

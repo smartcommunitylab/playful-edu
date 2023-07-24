@@ -16,6 +16,7 @@ public class LearningScenario {
 	private String title;
 	private String desc;
 	private String language;
+	private boolean publicScenario;
 	private List<String> learners = new ArrayList<>();
 	private List<String> educators = new ArrayList<>();
 
@@ -73,6 +74,14 @@ public class LearningScenario {
 
 	public void setEducators(List<String> educators) {
 		this.educators = educators;
+	}
+
+	public boolean isPublicScenario() {
+		return publicScenario;
+	}
+
+	public void setPublicScenario(boolean publicScenario) {
+		this.publicScenario = publicScenario;
 	}
 
 

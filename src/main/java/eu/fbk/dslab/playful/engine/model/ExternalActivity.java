@@ -10,7 +10,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document(collection="ext-activities")
 public class ExternalActivity {
 	public static enum Type {
-		individual 
+		individual, group 
 	};
 	
 	public static enum Tool {
@@ -29,13 +29,14 @@ public class ExternalActivity {
 	private String desc;
 	private String language;
 	private String extId;
+	private String extGroupId;
 	private String extUrl;
 	private Type type;
 	private Tool tool;
 	private Difficulty difficulty;
+	private String groupCorrelator;
 	private List<String> preconditions = new ArrayList<>();
 	private List<String> effects = new ArrayList<>();
-	
 
 	public String getId() {
 		return id;
@@ -132,6 +133,23 @@ public class ExternalActivity {
 	public void setExtId(String extId) {
 		this.extId = extId;
 	}
+
+	public String getExtGroupId() {
+		return extGroupId;
+	}
+
+	public void setExtGroupId(String extGroupId) {
+		this.extGroupId = extGroupId;
+	}
+
+	public String getGroupCorrelator() {
+		return groupCorrelator;
+	}
+
+	public void setGroupCorrelator(String groupCorrelator) {
+		this.groupCorrelator = groupCorrelator;
+	}
+
 
 
 }

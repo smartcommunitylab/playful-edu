@@ -5,6 +5,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,7 +32,7 @@ public class ComposedActivityController {
 		if(ids != null) {
 			list = composedActivityRepository.findByIdIn(ids);
 		} else if(learningFragmentId != null) {
-			list = composedActivityRepository.findByLearningFragmentId(learningFragmentId);
+			list = composedActivityRepository.findByLearningFragmentId(learningFragmentId, Sort.by(Direction.ASC, "position"));
 		} else {
 			list = composedActivityRepository.findAll(); 
 		}
