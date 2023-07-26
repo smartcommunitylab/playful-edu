@@ -13,4 +13,5 @@ import eu.fbk.dslab.playful.engine.model.Educator;
 public interface EducatorRepository extends MongoRepository<Educator, String> {
 	public List<Educator> findByIdIn(List<String> ids);
 	public Page<Educator> findByDomainId(String domainId, Pageable pageRequest);
+	public Educator findOneByDomainIdAndNickname(String domainId, String nickname);
 }

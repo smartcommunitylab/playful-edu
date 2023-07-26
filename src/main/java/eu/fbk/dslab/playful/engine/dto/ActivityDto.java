@@ -15,6 +15,7 @@ public class ActivityDto {
 	private Type type;
 	private List<Concept> goals = new ArrayList<>();
 	private ExternalActivity externalActivity;
+	private String groupCorrelator;
 	
 	public ActivityDto() {}
 	
@@ -23,6 +24,7 @@ public class ActivityDto {
 		this.title = activity.getTitle();
 		this.desc = activity.getDesc();
 		this.type = activity.getType();
+		this.groupCorrelator = activity.getGroupCorrelator();
 	}
 
 	public String getId() {
@@ -71,6 +73,14 @@ public class ActivityDto {
 
 	public void setExternalActivity(ExternalActivity externalActivity) {
 		this.externalActivity = externalActivity;
+	}
+
+	public String getGroupCorrelator() {
+		return groupCorrelator;
+	}
+
+	public void setGroupCorrelator(String groupCorrelator) {
+		this.groupCorrelator = groupCorrelator;
 	}
 
 
