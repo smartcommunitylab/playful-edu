@@ -27,12 +27,12 @@ public class LearningModuleController {
 	@GetMapping("/api/modules")
 	public Page<LearningModule> getList(
 			@RequestParam(required = false) List<String> ids,
-			@RequestParam(required = false) String learningModuleId) {
+			@RequestParam(required = false) String learningScenarioId) {
 		List<LearningModule> list = null;
 		if(ids != null) {
 			list = learningModuleRepository.findByIdIn(ids);
-		} else if(learningModuleId != null) {
-			list = learningModuleRepository.findByLearningScenarioId(learningModuleId, Sort.by(Direction.ASC, "position"));
+		} else if(learningScenarioId != null) {
+			list = learningModuleRepository.findByLearningScenarioId(learningScenarioId, Sort.by(Direction.ASC, "position"));
 		} else {
 			list = learningModuleRepository.findAll();
 		}
