@@ -28,12 +28,17 @@ public class LearnerController {
 	public Page<Learner> getList(
 			@RequestParam(required = false) List<String> ids,
 			@RequestParam(required = false) String domainId,
+			@RequestParam(required = false) String text,
 			@ParameterObject Pageable pageRequest) {
 		if(ids != null) {
 			List<Learner> list = learnerRepository.findByIdIn(ids);
 			return new PageImpl<>(list);
 		} else if(domainId != null) {
-			return learnerRepository.findByDomainId(domainId, pageRequest); 
+			if(text != null) {
+				return learnerRepository.findByDomainIdAndText(domainId, text, pageRequest);
+			} else {
+				return learnerRepository.findByDomainId(domainId, pageRequest);	
+			}
 		}
 		return learnerRepository.findAll(pageRequest);
 	}

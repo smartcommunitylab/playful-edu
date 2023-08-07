@@ -28,12 +28,17 @@ public class EducatorController {
 	public Page<Educator> getList(
 			@RequestParam(required = false) List<String> ids,
 			@RequestParam(required = false) String domainId,
+			@RequestParam(required = false) String text,
 			@ParameterObject Pageable pageRequest) {
 		if(ids != null) {
 			List<Educator> list = educatorRepository.findByIdIn(ids);
 			return new PageImpl<>(list);
 		} else if(domainId != null) {
-			return educatorRepository.findByDomainId(domainId, pageRequest); 
+			if(text != null) {
+				return educatorRepository.findByDomainIdAndText(domainId, text, pageRequest);
+			} else {
+				return educatorRepository.findByDomainId(domainId, pageRequest);
+			}
 		}
 		return educatorRepository.findAll(pageRequest);
 	}
