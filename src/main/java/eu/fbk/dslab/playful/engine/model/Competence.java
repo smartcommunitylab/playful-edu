@@ -19,6 +19,7 @@ public class Competence {
 	private String domainId;	
 	private String title;
 	private String desc;
+	private Type type;
 	private List<String> concepts = new ArrayList<>();
 	
 
@@ -60,6 +61,14 @@ public class Competence {
 
 	public void setDomainId(String domainId) {
 		this.domainId = domainId;
+	}
+
+	public Type getType() {
+		return type;
+	}
+
+	public void setType(Type type) {
+		this.type = type;
 	}
 
 
