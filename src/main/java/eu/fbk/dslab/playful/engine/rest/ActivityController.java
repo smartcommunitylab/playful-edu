@@ -25,12 +25,12 @@ public class ActivityController {
 	@GetMapping("/api/activities")
 	public Page<Activity> getList(
 			@RequestParam(required = false) List<String> ids,
-			@RequestParam(required = false) String composedActivityId) {
+			@RequestParam(required = false) String learningFragmentId) {
 		List<Activity> list = null;
 		if(ids != null) {
 			list = activityRepository.findByIdIn(ids);
-		} else if(composedActivityId != null) {
-			list = activityRepository.findByComposedActivityId(composedActivityId);
+		} else if(learningFragmentId != null) {
+			list = activityRepository.findByLearningFragmentId(learningFragmentId);
 		} else {
 			list = activityRepository.findAll();
 		}

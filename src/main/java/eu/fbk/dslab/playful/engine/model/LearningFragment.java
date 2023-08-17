@@ -6,6 +6,10 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection="learning-fragments")
 public class LearningFragment {
+	public static enum Type {
+		singleton, set, list
+	};
+	
 	@Id
 	private String id;
 	@Indexed
@@ -14,6 +18,7 @@ public class LearningFragment {
 	private String learningModuleId;
 	private String title;
 	private String desc;
+	private Type type;
 
 	public String getId() {
 		return id;
@@ -47,6 +52,14 @@ public class LearningFragment {
 		this.domainId = domainId;
 	}
 
+	public Type getType() {
+		return type;
+	}
+
+	public void setType(Type type) {
+		this.type = type;
+	}
+
 	public String getLearningModuleId() {
 		return learningModuleId;
 	}
@@ -54,6 +67,7 @@ public class LearningFragment {
 	public void setLearningModuleId(String learningModuleId) {
 		this.learningModuleId = learningModuleId;
 	}
+
 
 
 }

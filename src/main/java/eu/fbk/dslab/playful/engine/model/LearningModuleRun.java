@@ -1,8 +1,11 @@
 package eu.fbk.dslab.playful.engine.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class LearningModuleRun {
 	private String learningModuleId;
-	private LearningFragmentRun fragment;
+	private List<LearningFragmentRun> fragments = new ArrayList<>();
 	
 	public String getLearningModuleId() {
 		return learningModuleId;
@@ -10,10 +13,10 @@ public class LearningModuleRun {
 	public void setLearningModuleId(String learningModuleId) {
 		this.learningModuleId = learningModuleId;
 	}
-	public LearningFragmentRun getFragment() {
-		return fragment;
+	public List<LearningFragmentRun> getFragments() {
+		return fragments;
 	}
-	public void setFragment(LearningFragmentRun fragment) {
-		this.fragment = fragment;
+	public void setFragments(List<LearningFragmentRun> fragments) {
+		this.fragments = fragments;
 	}
 }

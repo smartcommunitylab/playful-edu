@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException;
 
-import eu.fbk.dslab.playful.engine.dto.ComposedActivityRunDto;
 import eu.fbk.dslab.playful.engine.dto.LearningScenarioDto;
 import eu.fbk.dslab.playful.engine.manager.RunningScenarioService;
 import eu.fbk.dslab.playful.engine.manager.ScenarioService;
@@ -18,6 +17,7 @@ import eu.fbk.dslab.playful.engine.model.ActivityStatus;
 import eu.fbk.dslab.playful.engine.model.ActivityStatus.Status;
 import eu.fbk.dslab.playful.engine.model.Educator;
 import eu.fbk.dslab.playful.engine.model.Learner;
+import eu.fbk.dslab.playful.engine.model.LearningFragmentRun;
 import eu.fbk.dslab.playful.engine.model.LearningScenarioRun;
 
 @RestController
@@ -81,12 +81,12 @@ public class ExtController {
 	}
 	
 	@GetMapping("/api/ext/composedactivity/next")
-	public ResponseEntity<ComposedActivityRunDto> getNextActivity(
+	public ResponseEntity<LearningFragmentRun> getNextActivity(
 			@RequestParam String domainId,
 			@RequestParam String learningScenarioId, 
 			@RequestParam String learnerId) {
 		try {
-			ComposedActivityRunDto dto = runningScenarioService.getNextActivity(domainId, learningScenarioId, learnerId);
+			LearningFragmentRun dto = runningScenarioService.getNextActivity(domainId, learningScenarioId, learnerId);
 			return ResponseEntity.ok(dto);
 		} catch (HttpClientErrorException e) {
 			return new ResponseEntity<>(null, e.getStatusCode());

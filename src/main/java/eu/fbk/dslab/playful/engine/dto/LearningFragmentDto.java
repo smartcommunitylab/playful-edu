@@ -4,12 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import eu.fbk.dslab.playful.engine.model.LearningFragment;
+import eu.fbk.dslab.playful.engine.model.LearningFragment.Type;
 
 public class LearningFragmentDto {
 	private String id;
 	private String title;
 	private String desc;
-	private List<ComposedActivityDto> composedActivities = new ArrayList<>();
+	private Type type;
+	private List<ActivityDto> activities = new ArrayList<>();
 	
 	public LearningFragmentDto() {}
 	
@@ -17,6 +19,7 @@ public class LearningFragmentDto {
 		this.id = fragment.getId();
 		this.title = fragment.getTitle();
 		this.desc = fragment.getDesc();
+		this.type = fragment.getType();
 	}
 
 	public String getTitle() {
@@ -35,20 +38,28 @@ public class LearningFragmentDto {
 		this.desc = desc;
 	}
 
-	public List<ComposedActivityDto> getComposedActivities() {
-		return composedActivities;
-	}
-
-	public void setComposedActivities(List<ComposedActivityDto> composedActivities) {
-		this.composedActivities = composedActivities;
-	}
-
 	public String getId() {
 		return id;
 	}
 
 	public void setId(String id) {
 		this.id = id;
+	}
+
+	public Type getType() {
+		return type;
+	}
+
+	public void setType(Type type) {
+		this.type = type;
+	}
+
+	public List<ActivityDto> getActivities() {
+		return activities;
+	}
+
+	public void setActivities(List<ActivityDto> activities) {
+		this.activities = activities;
 	}
 
 

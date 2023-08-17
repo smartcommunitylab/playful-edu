@@ -3,9 +3,18 @@ package eu.fbk.dslab.playful.engine.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.data.annotation.Transient;
+
+import eu.fbk.dslab.playful.engine.model.LearningFragment.Type;
+
 public class LearningFragmentRun {
 	private String learningFragmentId;
-	private List<ComposedActivityRun> composedActivities = new ArrayList<>();
+	private Type type;
+	private List<String> activityStatusIds = new ArrayList<>();
+	
+	@Transient
+	private List<ActivityStatus> activities = new ArrayList<>();
+
 	
 	public String getLearningFragmentId() {
 		return learningFragmentId;
@@ -13,10 +22,22 @@ public class LearningFragmentRun {
 	public void setLearningFragmentId(String learningFragmentId) {
 		this.learningFragmentId = learningFragmentId;
 	}
-	public List<ComposedActivityRun> getComposedActivities() {
-		return composedActivities;
+	public Type getType() {
+		return type;
 	}
-	public void setComposedActivities(List<ComposedActivityRun> composedActivities) {
-		this.composedActivities = composedActivities;
+	public void setType(Type type) {
+		this.type = type;
+	}
+	public List<String> getActivityStatusIds() {
+		return activityStatusIds;
+	}
+	public void setActivityStatusIds(List<String> activityStatusIds) {
+		this.activityStatusIds = activityStatusIds;
+	}
+	public List<ActivityStatus> getActivities() {
+		return activities;
+	}
+	public void setActivities(List<ActivityStatus> activities) {
+		this.activities = activities;
 	}
 }

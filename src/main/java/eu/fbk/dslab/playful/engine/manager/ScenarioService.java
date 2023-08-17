@@ -1,6 +1,8 @@
 package eu.fbk.dslab.playful.engine.manager;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -14,12 +16,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 
 import eu.fbk.dslab.playful.engine.dto.ActivityDto;
-import eu.fbk.dslab.playful.engine.dto.ComposedActivityDto;
 import eu.fbk.dslab.playful.engine.dto.LearningFragmentDto;
 import eu.fbk.dslab.playful.engine.dto.LearningModuleDto;
 import eu.fbk.dslab.playful.engine.dto.LearningScenarioDto;
 import eu.fbk.dslab.playful.engine.model.Activity;
-import eu.fbk.dslab.playful.engine.model.ComposedActivity;
 import eu.fbk.dslab.playful.engine.model.Concept;
 import eu.fbk.dslab.playful.engine.model.Educator;
 import eu.fbk.dslab.playful.engine.model.ExternalActivity;
@@ -28,7 +28,6 @@ import eu.fbk.dslab.playful.engine.model.LearningFragment;
 import eu.fbk.dslab.playful.engine.model.LearningModule;
 import eu.fbk.dslab.playful.engine.model.LearningScenario;
 import eu.fbk.dslab.playful.engine.repository.ActivityRepository;
-import eu.fbk.dslab.playful.engine.repository.ComposedActivityRepository;
 import eu.fbk.dslab.playful.engine.repository.ConceptRepository;
 import eu.fbk.dslab.playful.engine.repository.EducatorRepository;
 import eu.fbk.dslab.playful.engine.repository.ExternalActivityRepository;
@@ -49,9 +48,6 @@ public class ScenarioService {
 	
 	@Autowired
 	LearningFragmentRepository learningFragmentRepository;
-	
-	@Autowired
-	ComposedActivityRepository composedActivityRepository;
 	
 	@Autowired
 	ActivityRepository activityRepository;
@@ -120,20 +116,21 @@ public class ScenarioService {
 				LearningModuleDto moduleDto = new LearningModuleDto(module);
 				scenarioDto.getModules().add(moduleDto);
 				
-				LearningFragment fragment = learningFragmentRepository.findFirstByLearningModuleId(module.getId());
-				LearningFragmentDto fragmentDto = new LearningFragmentDto(fragment);
-				moduleDto.setFragment(fragmentDto);
-				
-				List<ComposedActivity> composedActivities = composedActivityRepository.findByLearningFragmentId(fragment.getId(), 
+				List<LearningFragment> fragments = learningFragmentRepository.findByLearningModuleId(module.getId(), 
 						Sort.by(Direction.ASC, "position"));
-				for(ComposedActivity composedActivity : composedActivities) {
-					ComposedActivityDto composedActivityDto = new ComposedActivityDto(composedActivity);
-					fragmentDto.getComposedActivities().add(composedActivityDto);
+				for(LearningFragment fragment : fragments) {
+					LearningFragmentDto fragmentDto = new LearningFragmentDto(fragment);
+					moduleDto.setFragment(fragmentDto);
 					
-					List<Activity> activities = activityRepository.findByComposedActivityId(composedActivity.getId());
+					List<Activity> activities = activityRepository.findByLearningFragmentId(fragment.getId());
+					if(fragment.getType().equals(LearningFragment.Type.list)) {
+						Comparator<Activity> compareByPosition = 
+								(Activity o1, Activity o2) -> Integer.compare(o1.getPosition(), o2.getPosition());
+						Collections.sort(activities, compareByPosition);
+					}
 					for(Activity activity : activities) {
 						ActivityDto activityDto = new ActivityDto(activity);
-						composedActivityDto.getActivities().add(activityDto);
+						fragmentDto.getActivities().add(activityDto);
 						
 						if(StringUtils.isNotBlank(activity.getExternalActivityId())) {
 							ExternalActivity externalActivity = externalActivityRepository.findById(activity.getExternalActivityId()).orElse(null);
@@ -142,7 +139,7 @@ public class ScenarioService {
 						
 						List<Concept> goals = conceptRepository.findByIdIn(activity.getGoals());
 						activityDto.getGoals().addAll(goals);
-					}
+					}					
 				}
 			}
 			return scenarioDto;

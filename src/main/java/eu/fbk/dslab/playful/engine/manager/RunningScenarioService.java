@@ -14,13 +14,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 
-import eu.fbk.dslab.playful.engine.dto.ComposedActivityRunDto;
 import eu.fbk.dslab.playful.engine.model.Activity;
 import eu.fbk.dslab.playful.engine.model.Activity.Type;
 import eu.fbk.dslab.playful.engine.model.ActivityStatus;
 import eu.fbk.dslab.playful.engine.model.ActivityStatus.Status;
-import eu.fbk.dslab.playful.engine.model.ComposedActivity;
-import eu.fbk.dslab.playful.engine.model.ComposedActivityRun;
 import eu.fbk.dslab.playful.engine.model.ExternalActivity;
 import eu.fbk.dslab.playful.engine.model.Group;
 import eu.fbk.dslab.playful.engine.model.Learner;
@@ -32,7 +29,6 @@ import eu.fbk.dslab.playful.engine.model.LearningScenario;
 import eu.fbk.dslab.playful.engine.model.LearningScenarioRun;
 import eu.fbk.dslab.playful.engine.repository.ActivityRepository;
 import eu.fbk.dslab.playful.engine.repository.ActivityStatusRepository;
-import eu.fbk.dslab.playful.engine.repository.ComposedActivityRepository;
 import eu.fbk.dslab.playful.engine.repository.ConceptRepository;
 import eu.fbk.dslab.playful.engine.repository.EducatorRepository;
 import eu.fbk.dslab.playful.engine.repository.ExternalActivityRepository;
@@ -55,9 +51,6 @@ public class RunningScenarioService {
 	
 	@Autowired
 	LearningFragmentRepository learningFragmentRepository;
-	
-	@Autowired
-	ComposedActivityRepository composedActivityRepository;
 	
 	@Autowired
 	ActivityRepository activityRepository;
@@ -87,16 +80,13 @@ public class RunningScenarioService {
 		LearningScenarioRun scenarioRun = learningScenarioRunRepository.findByLearningScenarioIdAndLearnerId(learningScenarioId, learnerId);
 		if(scenarioRun != null) {
 			for(LearningModuleRun module : scenarioRun.getModules()) {
-				LearningFragmentRun fragment = module.getFragment();
-				if(fragment != null) {
-					for(ComposedActivityRun composedActivity : fragment.getComposedActivities()) {
-						for(String activityStatusId : composedActivity.getActivityStatusIds()) {
-							ActivityStatus activityStatus = activityStatusRepository.findById(activityStatusId).orElse(null);
-							if(activityStatus != null) {
-								composedActivity.getActivities().add(activityStatus);
-							}
+				for(LearningFragmentRun fragment : module.getFragments()) {
+					for(String activityStatusId : fragment.getActivityStatusIds()) {
+						ActivityStatus activityStatus = activityStatusRepository.findById(activityStatusId).orElse(null);
+						if(activityStatus != null) {
+							fragment.getActivities().add(activityStatus);
 						}
-					}
+					}					
 				}
 			}
 			return scenarioRun;
@@ -140,68 +130,59 @@ public class RunningScenarioService {
 			moduleRun.setLearningModuleId(module.getId());
 			scenarioRun.getModules().add(moduleRun);
 			
-			LearningFragment fragment = learningFragmentRepository.findFirstByLearningModuleId(module.getId());
-			if(fragment != null) {
+			List<LearningFragment> fragments = learningFragmentRepository.findByLearningModuleId(module.getId(), 
+					Sort.by(Direction.ASC, "position"));
+			for(LearningFragment fragment : fragments) {
 				LearningFragmentRun fragmentRun = new LearningFragmentRun();
 				fragmentRun.setLearningFragmentId(fragment.getId());
-				moduleRun.setFragment(fragmentRun);
+				fragmentRun.setType(fragment.getType());
+				moduleRun.getFragments().add(fragmentRun);
 				
-				List<ComposedActivity> composedActivities = composedActivityRepository.findByLearningFragmentId(fragment.getId(), 
-						Sort.by(Direction.ASC, "position"));
-				for(ComposedActivity composedActivity : composedActivities) {
-					ComposedActivityRun composedActivityRun = new ComposedActivityRun();
-					composedActivityRun.setComposedActivityId(composedActivity.getId());
-					composedActivityRun.setType(composedActivity.getType());
-					fragmentRun.getComposedActivities().add(composedActivityRun);
-					
-					List<Activity> activities = activityRepository.findByComposedActivityId(composedActivity.getId());
-					if(composedActivity.getType().equals(ComposedActivity.Type.list)) {
-						Comparator<Activity> compareByPosition = 
-								(Activity o1, Activity o2) -> Integer.compare(o1.getPosition(), o2.getPosition());
-						Collections.sort(activities, compareByPosition);
-					}
-					for(Activity activity : activities) {
-						if(activity.getType().equals(Type.concrete)) {
-							ActivityStatus activityStatus = new ActivityStatus();
-							activityStatus.setDomainId(learningScenario.getDomainId());
-							activityStatus.setActivityId(activity.getId());
-							activityStatus.setExternalActivityId(activity.getExternalActivityId());
-							activityStatus.setComposedActivityId(composedActivity.getId());
-							activityStatus.setLearningFragmentId(fragment.getId());
-							activityStatus.setLearningModuleId(module.getId());
-							activityStatus.setLearningScenarioId(learningScenario.getId());
-							activityStatus.setLearningScenarioRunId(scenarioRun.getId());
-							activityStatus.setLearnerId(learner.getId());
-							activityStatus.setLastUpdate(new Date());
-							activityStatusRepository.save(activityStatus);
-							composedActivityRun.getActivityStatusIds().add(activityStatus.getId());
-						} else if(activity.getType().equals(Type.group)) { 
-							List<ExternalActivity> extActivityList = externalActivityRepository.findByDomainIdAndGroupCorrelator(
-									learningScenario.getDomainId(), activity.getGroupCorrelator());
-							for(ExternalActivity extActivity : extActivityList) {
-								Group group = groupRepository.findOneByDomainIdAndExtId(learningScenario.getDomainId(), 
-										extActivity.getExtGroupId());
-								if(group != null) {
-									if(group.getLearners().contains(learner.getId())) {
-										ActivityStatus activityStatus = new ActivityStatus();
-										activityStatus.setDomainId(learningScenario.getDomainId());
-										activityStatus.setActivityId(activity.getId());
-										activityStatus.setExternalActivityId(extActivity.getId());
-										activityStatus.setComposedActivityId(composedActivity.getId());
-										activityStatus.setLearningFragmentId(fragment.getId());
-										activityStatus.setLearningModuleId(module.getId());
-										activityStatus.setLearningScenarioId(learningScenario.getId());
-										activityStatus.setLearningScenarioRunId(scenarioRun.getId());
-										activityStatus.setLearnerId(learner.getId());
-										activityStatus.setLastUpdate(new Date());
-										activityStatusRepository.save(activityStatus);
-										composedActivityRun.getActivityStatusIds().add(activityStatus.getId());
-									}									
-								}
+				List<Activity> activities = activityRepository.findByLearningFragmentId(fragment.getId());
+				if(fragment.getType().equals(LearningFragment.Type.list)) {
+					Comparator<Activity> compareByPosition = 
+							(Activity o1, Activity o2) -> Integer.compare(o1.getPosition(), o2.getPosition());
+					Collections.sort(activities, compareByPosition);
+				}
+				for(Activity activity : activities) {
+					if(activity.getType().equals(Type.concrete)) {
+						ActivityStatus activityStatus = new ActivityStatus();
+						activityStatus.setDomainId(learningScenario.getDomainId());
+						activityStatus.setActivityId(activity.getId());
+						activityStatus.setExternalActivityId(activity.getExternalActivityId());
+						activityStatus.setLearningFragmentId(fragment.getId());
+						activityStatus.setLearningModuleId(module.getId());
+						activityStatus.setLearningScenarioId(learningScenario.getId());
+						activityStatus.setLearningScenarioRunId(scenarioRun.getId());
+						activityStatus.setLearnerId(learner.getId());
+						activityStatus.setLastUpdate(new Date());
+						activityStatusRepository.save(activityStatus);
+						fragmentRun.getActivityStatusIds().add(activityStatus.getId());
+					} else if(activity.getType().equals(Type.group)) { 
+						List<ExternalActivity> extActivityList = externalActivityRepository.findByDomainIdAndGroupCorrelator(
+								learningScenario.getDomainId(), activity.getGroupCorrelator());
+						for(ExternalActivity extActivity : extActivityList) {
+							Group group = groupRepository.findOneByDomainIdAndExtId(learningScenario.getDomainId(), 
+									extActivity.getExtGroupId());
+							if(group != null) {
+								if(group.getLearners().contains(learner.getId())) {
+									ActivityStatus activityStatus = new ActivityStatus();
+									activityStatus.setDomainId(learningScenario.getDomainId());
+									activityStatus.setActivityId(activity.getId());
+									activityStatus.setExternalActivityId(extActivity.getId());
+									activityStatus.setLearningFragmentId(fragment.getId());
+									activityStatus.setLearningModuleId(module.getId());
+									activityStatus.setLearningScenarioId(learningScenario.getId());
+									activityStatus.setLearningScenarioRunId(scenarioRun.getId());
+									activityStatus.setLearnerId(learner.getId());
+									activityStatus.setLastUpdate(new Date());
+									activityStatusRepository.save(activityStatus);
+									fragmentRun.getActivityStatusIds().add(activityStatus.getId());
+								}									
 							}
-						} else {
-							logger.warn(String.format("skip abstract activity[%s]:%s", activity.getId(), activity.getTitle()));
 						}
+					} else {
+						logger.warn(String.format("skip abstract activity[%s]:%s", activity.getId(), activity.getTitle()));
 					}
 				}
 			}
@@ -209,25 +190,21 @@ public class RunningScenarioService {
 		learningScenarioRunRepository.save(scenarioRun);
 	}
 	
-	public ComposedActivityRunDto getNextActivity(String domainId, String learningScenarioId, String learnerId) throws HttpClientErrorException {
+	public LearningFragmentRun getNextActivity(String domainId, String learningScenarioId, String learnerId) throws HttpClientErrorException {
 		LearningScenarioRun scenarioRun = learningScenarioRunRepository.findByLearningScenarioIdAndLearnerId(learningScenarioId, learnerId);
 		if(scenarioRun != null) {
 			for(LearningModuleRun moduleRun : scenarioRun.getModules()) {
-				LearningFragmentRun fragmentRun = moduleRun.getFragment();
-				if(fragmentRun != null) {
-					for(ComposedActivityRun activityRun : fragmentRun.getComposedActivities()) {
-						ComposedActivityRunDto activityRunDto = new ComposedActivityRunDto(activityRun);					
-						List<ActivityStatus> list = activityStatusRepository.findByIdIn(activityRun.getActivityStatusIds());
-						boolean found = false;
-						for(ActivityStatus activityStatus : list) {
-							if(activityStatus.getStatus().equals(Status.assigned)) {
-								found = true;
-								activityRunDto.getActivities().add(activityStatus);
-							}
+				for(LearningFragmentRun fragmentRun : moduleRun.getFragments()) {
+					List<ActivityStatus> list = activityStatusRepository.findByIdIn(fragmentRun.getActivityStatusIds());
+					boolean found = false;
+					for(ActivityStatus activityStatus : list) {
+						if(activityStatus.getStatus().equals(Status.assigned)) {
+							found = true;
+							fragmentRun.getActivities().add(activityStatus);
 						}
-						if(found) {
-							return activityRunDto;
-						}
+					}
+					if(found) {
+						return fragmentRun;
 					}					
 				}
 			}
@@ -240,22 +217,19 @@ public class RunningScenarioService {
 		LearningScenarioRun scenarioRun = learningScenarioRunRepository.findByLearningScenarioIdAndLearnerId(learningScenarioId, learnerId);
 		if(scenarioRun != null) {
 			for(LearningModuleRun module : scenarioRun.getModules()) {
-				LearningFragmentRun fragment = module.getFragment();
-				if(fragment != null) {
-					for(ComposedActivityRun composedActivity : fragment.getComposedActivities()) {
-						for(String activityStatusId : composedActivity.getActivityStatusIds()) {
-							ActivityStatus activityStatus = activityStatusRepository.findById(activityStatusId).orElse(null);
-							if(activityStatus != null) {
-								if(activityStatus.getActivityId().equals(activityId) && 
-										(Status.in_progress.equals(activityStatus.getStatus()) 
-												|| Status.assigned.equals(activityStatus.getStatus()))) {
-									activityStatus.setStatus(status);
-									activityStatusRepository.save(activityStatus);
-									return;
-								}
+				for(LearningFragmentRun fragment : module.getFragments()) {
+					for(String activityStatusId : fragment.getActivityStatusIds()) {
+						ActivityStatus activityStatus = activityStatusRepository.findById(activityStatusId).orElse(null);
+						if(activityStatus != null) {
+							if(activityStatus.getActivityId().equals(activityId) && 
+									(Status.in_progress.equals(activityStatus.getStatus()) 
+											|| Status.assigned.equals(activityStatus.getStatus()))) {
+								activityStatus.setStatus(status);
+								activityStatusRepository.save(activityStatus);
+								return;
 							}
 						}
-					}
+					}					
 				}
 			}
 		}			

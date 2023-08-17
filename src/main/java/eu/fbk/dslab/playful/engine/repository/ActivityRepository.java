@@ -10,5 +10,5 @@ import eu.fbk.dslab.playful.engine.model.Activity;
 @Repository
 public interface ActivityRepository extends MongoRepository<Activity, String> {
 	public List<Activity> findByIdIn(List<String> ids);
-	public List<Activity> findByComposedActivityId(String composedActivityId);
+	public List<Activity> findByLearningFragmentId(String learningFragmentId);
 }

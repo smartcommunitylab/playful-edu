@@ -21,7 +21,6 @@ public class ActivityStatus {
 	private String learningScenarioId;
 	private String learningModuleId;
 	private String learningFragmentId;
-	private String composedActivityId;
 	private String activityId;
 	private String externalActivityId;
 	private String learnerId;
@@ -81,12 +80,6 @@ public class ActivityStatus {
 	}
 	public void setLearningFragmentId(String learningFragmentId) {
 		this.learningFragmentId = learningFragmentId;
-	}
-	public String getComposedActivityId() {
-		return composedActivityId;
-	}
-	public void setComposedActivityId(String composedActivityId) {
-		this.composedActivityId = composedActivityId;
 	}
 	public String getActivityId() {
 		return activityId;

@@ -18,7 +18,7 @@ public class Activity {
 	@Indexed
 	private String domainId;
 	@Indexed
-	private String composedActivityId;
+	private String learningFragmentId;
 	private String title;
 	private String desc;
 	private Type type;
@@ -83,14 +83,6 @@ public class Activity {
 		this.externalActivityId = externalActivityId;
 	}
 
-	public String getComposedActivityId() {
-		return composedActivityId;
-	}
-
-	public void setComposedActivityId(String composedActivityId) {
-		this.composedActivityId = composedActivityId;
-	}
-
 	public int getPosition() {
 		return position;
 	}
@@ -105,6 +97,14 @@ public class Activity {
 
 	public void setGroupCorrelator(String groupCorrelator) {
 		this.groupCorrelator = groupCorrelator;
+	}
+
+	public String getLearningFragmentId() {
+		return learningFragmentId;
+	}
+
+	public void setLearningFragmentId(String learningFragmentId) {
+		this.learningFragmentId = learningFragmentId;
 	}
 
 
