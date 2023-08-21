@@ -28,6 +28,7 @@ public class ExternalActivity {
 	private String title;
 	private String desc;
 	private String language;
+	@Indexed
 	private String extId;
 	private String extGroupId;
 	private String extUrl;

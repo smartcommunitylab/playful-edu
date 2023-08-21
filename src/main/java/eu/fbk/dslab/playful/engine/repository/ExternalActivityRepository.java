@@ -13,5 +13,6 @@ import eu.fbk.dslab.playful.engine.model.ExternalActivity;
 public interface ExternalActivityRepository extends MongoRepository<ExternalActivity, String> {
 	public List<ExternalActivity> findByIdIn(List<String> ids);
 	public Page<ExternalActivity> findByDomainId(String domainId, Pageable pageRequest);
+	public ExternalActivity findOneByDomainIdAndExtId(String domainId, String extId);
 	public List<ExternalActivity> findByDomainIdAndGroupCorrelator(String domainId, String groupCorrelator);
 }
