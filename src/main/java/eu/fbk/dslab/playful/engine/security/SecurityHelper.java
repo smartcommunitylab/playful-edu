@@ -48,6 +48,19 @@ public class SecurityHelper {
 		return subject;
 	}
 	
+	public void checkRole(Role role, String entityId) throws UnauthorizedException {
+		String username = getCurrentPreferredUsername();
+		if(!checkAdmin(username) && !checkRole(username, role, entityId)) {
+			throw new UnauthorizedException("role not found"); 
+		}
+	}
+	
+	public void checkAdminRole() throws UnauthorizedException {
+		if(!checkAdmin(getCurrentPreferredUsername())) {
+			throw new UnauthorizedException("role not found");
+		}
+	}
+	
 	private boolean checkAdmin(String username) {
 		List<UserRole> list;
 		try {

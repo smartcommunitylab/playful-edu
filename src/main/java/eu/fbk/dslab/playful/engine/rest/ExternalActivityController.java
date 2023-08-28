@@ -16,49 +16,71 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import eu.fbk.dslab.playful.engine.exception.EntityException;
+import eu.fbk.dslab.playful.engine.exception.UnauthorizedException;
 import eu.fbk.dslab.playful.engine.model.ExternalActivity;
 import eu.fbk.dslab.playful.engine.repository.ExternalActivityRepository;
+import eu.fbk.dslab.playful.engine.security.SecurityHelper;
+import eu.fbk.dslab.playful.engine.security.UserRole.Role;
 
 @RestController
 public class ExternalActivityController {
 	@Autowired
 	ExternalActivityRepository externalActivityRepository;
 	
+	@Autowired
+	SecurityHelper securityHelper;
+	
 	@GetMapping("/api/external-activities")
 	public Page<ExternalActivity> getList(
 			@RequestParam(required = false) List<String> ids,
 			@RequestParam(required = false) String domainId,
-			@ParameterObject Pageable pageRequest) {
+			@ParameterObject Pageable pageRequest) throws Exception {
 		if(ids != null) {
 			List<ExternalActivity> list = externalActivityRepository.findByIdIn(ids);
 			return new PageImpl<>(list);
 		} else if(domainId != null) {
+			securityHelper.checkRole(Role.domain, domainId);
 			return externalActivityRepository.findByDomainId(domainId, pageRequest); 
 		}
 		return externalActivityRepository.findAll(pageRequest);
 	}
 	
 	@GetMapping("/api/external-activities/{id}")
-	public ExternalActivity getOne(@PathVariable String id) {
-		return externalActivityRepository.findById(id).orElse(null);
+	public ExternalActivity getOne(@PathVariable String id) throws Exception {
+		ExternalActivity entity = externalActivityRepository.findById(id).orElse(null);
+		if(entity != null) {
+			securityHelper.checkRole(Role.domain, entity.getDomainId());
+		}
+		return entity;
 	}
 	
 	@PostMapping("/api/external-activities")
-	public ExternalActivity create(@RequestBody ExternalActivity externalActivity) {
+	public ExternalActivity create(@RequestBody ExternalActivity externalActivity) throws Exception {
+		securityHelper.checkRole(Role.domain, externalActivity.getDomainId());
 		return externalActivityRepository.save(externalActivity);
 	}
 	
 	@PutMapping("/api/external-activities/{id}")
 	public ExternalActivity update(@PathVariable String id,
-			@RequestBody ExternalActivity externalActivity) {
+			@RequestBody ExternalActivity externalActivity) throws Exception {
+		securityHelper.checkRole(Role.domain, externalActivity.getDomainId());
+		ExternalActivity ea = externalActivityRepository.findById(id).orElse(null);
+		if(ea == null) {
+			throw new EntityException("entity not found");
+		}
+		if(!ea.getDomainId().equals(externalActivity.getDomainId())) {
+			throw new UnauthorizedException("role not found");
+		}		
 		externalActivity.setId(id);
 		return externalActivityRepository.save(externalActivity);
 	}
 	
 	@DeleteMapping("/api/external-activities/{id}")
-	public ExternalActivity delete(@PathVariable String id) {
+	public ExternalActivity delete(@PathVariable String id) throws Exception {
 		ExternalActivity externalActivity = externalActivityRepository.findById(id).orElse(null);
 		if(externalActivity != null) {
+			securityHelper.checkRole(Role.domain, externalActivity.getDomainId());
 			externalActivityRepository.deleteById(id);
 		}
 		return externalActivity;
