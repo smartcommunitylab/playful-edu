@@ -5,14 +5,14 @@ services:
     image: mongo:4.2.6
     container_name: playfuledu-mongo
     ports:
-      - "50000:27017"
+      - "50077:27017"
     volumes:
       - mongo-data:/data/db
   playfuledu:
     image: smartcommunitylab/playful-edu-backend
     container_name: playfuledu
     ports:
-      - "8010:8080"
+      - "8077:8080"
     depends_on:
       - mongo
     links:
