@@ -15,6 +15,7 @@ public interface EducatorRepository extends MongoRepository<Educator, String> {
 	public List<Educator> findByIdIn(List<String> ids);
 	public Page<Educator> findByDomainId(String domainId, Pageable pageRequest);
 	public Educator findOneByDomainIdAndNickname(String domainId, String nickname);
+	public Educator findOneByDomainIdAndEmail(String domainId, String email);
 	
 	@Query("{'domainId':?0, $or:[{'firstname':{$regex:?1,$options:'i'}}, "
 			+ "{'lastname':{$regex:?1,$options:'i'}}, "

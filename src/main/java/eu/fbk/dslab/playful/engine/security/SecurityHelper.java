@@ -48,6 +48,12 @@ public class SecurityHelper {
 		return subject;
 	}
 	
+	public String getEmail() {
+		JwtAuthenticationToken authentication = (JwtAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+		Jwt principal = (Jwt) authentication.getPrincipal();
+		return principal.getClaimAsString("email");		
+	}
+	
 	public void checkRole(String entityId, Role... role) throws UnauthorizedException {
 		String username = getCurrentPreferredUsername();
 		if(checkAdmin(username))

@@ -12,6 +12,7 @@ public class Educator {
 	private String domainId;	
 	private String firstname;
 	private String lastname;
+	@Indexed
 	private String email;
 	@Indexed
 	private String nickname;
