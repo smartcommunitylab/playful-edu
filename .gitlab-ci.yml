@@ -1,0 +1,105 @@
+image: docker:latest
+
+services:
+  - docker:dind
+
+stages:
+  - build
+  - test
+  - deploy
+
+include:
+  - template: Security/Container-Scanning.gitlab-ci.yml
+  - template: Security/Dependency-Scanning.gitlab-ci.yml
+  - template: Security/SAST.gitlab-ci.yml
+
+variables:
+  DOCKER_DRIVER: overlay
+  DS_JAVA_VERSION: 20
+  SAST_JAVA_VERSION: 20
+  CONTAINER_BACKEND_IMAGE: smartcommunitylab/playful-edu-backend:$CI_COMMIT_REF_NAME-$CI_COMMIT_SHORT_SHA
+  CONTAINER_BACKEND_IMAGE_LATEST: smartcommunitylab/playful-edu-backend:$CI_COMMIT_REF_NAME-latest
+  CONTAINER_CACHE_IMAGE: smartcommunitylab/playful-edu-backend:cache
+
+update-backend-cache-image:
+  stage: build
+  variables:
+    BUILDKIT_PROGRESS: plain
+    DOCKER_BUILDKIT: 1 
+  script:
+    - docker login -u $DHUB_USER -p $DHUB_PASS
+    - docker build -f Dockerfile-cache -t $CONTAINER_CACHE_IMAGE .
+    - docker push $CONTAINER_CACHE_IMAGE
+  rules:
+    - changes:
+      - backend/pom.xml
+
+backend-container-build:
+  stage: build
+  script:
+    - docker login -u $DHUB_USER -p $DHUB_PASS
+    - DOCKER_BUILDKIT=1 docker build -f Dockerfile -t $CONTAINER_BACKEND_IMAGE -t $CONTAINER_BACKEND_IMAGE_LATEST .
+    - docker push $CONTAINER_BACKEND_IMAGE
+    - docker push $CONTAINER_BACKEND_IMAGE
+  only:
+    - dev
+    - prod
+    - main
+
+spotbugs-sast:
+  rules:
+     - if: '$CI_COMMIT_REF_NAME == "main"'
+
+semgrep-sast:
+  rules:
+     - if: '$CI_COMMIT_REF_NAME == "main"'
+
+nodejs-scan-sast:
+  rules:
+     - if: '$CI_COMMIT_REF_NAME == "main"'
+
+gemnasium-maven-dependency_scanning:
+  rules:
+     - if: '$CI_COMMIT_REF_NAME == "main"'
+
+gemnasium-dependency_scanning:
+  rules:
+     - if: '$CI_COMMIT_REF_NAME == "main"'
+
+container_scanning:
+  stage: test
+  variables:
+    DOCKER_IMAGE: smartcommunitylab/playful-edu-backend:$CI_COMMIT_REF_NAME-$CI_COMMIT_SHORT_SHA
+    DOCKERFILE_PATH: "Dockerfile"
+    GIT_STRATEGY: fetch
+    DOCKER_USER: ""
+    DOCKER_PASSWORD: ""
+  dependencies:
+    - backend-container-build
+  rules:
+    - if: '$CI_COMMIT_REF_NAME == "main"'
+
+
+deploy_backend_prod:
+  stage: deploy
+  image: smartcommunitylab/kubectl-alpine:latest
+  environment:
+    name: platform-new
+  script:
+    - echo "deploy"
+    - kubectl -n playfuledu set image deployments/playful-edu-backend-prod playful-edu-backend-prod=$CONTAINER_BACKEND_IMAGE --record=true
+    - kubectl -n playfuledu rollout status deployment playful-edu-backend-prod
+  only:
+    - prod
+
+deploy_backend_dev:
+  stage: deploy
+  image: smartcommunitylab/kubectl-alpine:latest
+  environment:
+    name: platform-new
+  script:
+    - echo "deploy"
+    - kubectl -n playfuledu set image deployments/playful-edu-backend-dev playful-edu-backend-dev=$CONTAINER_BACKEND_IMAGE --record=true
+    - kubectl -n playfuledu rollout status deployment playful-edu-backend-dev
+  only:
+    - dev
