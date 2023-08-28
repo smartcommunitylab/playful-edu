@@ -40,7 +40,7 @@ public class ExternalActivityController {
 			List<ExternalActivity> list = externalActivityRepository.findByIdIn(ids);
 			return new PageImpl<>(list);
 		} else if(domainId != null) {
-			securityHelper.checkRole(Role.domain, domainId);
+			securityHelper.checkRole(domainId, Role.domain, Role.educator);
 			return externalActivityRepository.findByDomainId(domainId, pageRequest); 
 		}
 		return externalActivityRepository.findAll(pageRequest);
@@ -50,21 +50,21 @@ public class ExternalActivityController {
 	public ExternalActivity getOne(@PathVariable String id) throws Exception {
 		ExternalActivity entity = externalActivityRepository.findById(id).orElse(null);
 		if(entity != null) {
-			securityHelper.checkRole(Role.domain, entity.getDomainId());
+			securityHelper.checkRole(entity.getDomainId(), Role.domain, Role.educator);
 		}
 		return entity;
 	}
 	
 	@PostMapping("/api/external-activities")
 	public ExternalActivity create(@RequestBody ExternalActivity externalActivity) throws Exception {
-		securityHelper.checkRole(Role.domain, externalActivity.getDomainId());
+		securityHelper.checkRole(externalActivity.getDomainId(), Role.domain);
 		return externalActivityRepository.save(externalActivity);
 	}
 	
 	@PutMapping("/api/external-activities/{id}")
 	public ExternalActivity update(@PathVariable String id,
 			@RequestBody ExternalActivity externalActivity) throws Exception {
-		securityHelper.checkRole(Role.domain, externalActivity.getDomainId());
+		securityHelper.checkRole(externalActivity.getDomainId(), Role.domain);
 		ExternalActivity ea = externalActivityRepository.findById(id).orElse(null);
 		if(ea == null) {
 			throw new EntityException("entity not found");
@@ -80,7 +80,7 @@ public class ExternalActivityController {
 	public ExternalActivity delete(@PathVariable String id) throws Exception {
 		ExternalActivity externalActivity = externalActivityRepository.findById(id).orElse(null);
 		if(externalActivity != null) {
-			securityHelper.checkRole(Role.domain, externalActivity.getDomainId());
+			securityHelper.checkRole(externalActivity.getDomainId(), Role.domain);
 			externalActivityRepository.deleteById(id);
 		}
 		return externalActivity;

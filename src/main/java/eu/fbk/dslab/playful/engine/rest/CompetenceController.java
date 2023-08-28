@@ -40,7 +40,7 @@ public class CompetenceController {
 			List<Competence> list = competenceRepository.findByIdIn(ids);
 			return new PageImpl<>(list);
 		} else if(domainId != null) {
-			securityHelper.checkRole(Role.domain, domainId);
+			securityHelper.checkRole(domainId, Role.domain, Role.educator);
 			return competenceRepository.findByDomainId(domainId, pageRequest); 
 		}
 		return competenceRepository.findAll(pageRequest);
@@ -50,21 +50,21 @@ public class CompetenceController {
 	public Competence getOne(@PathVariable String id) throws Exception {
 		Competence entity = competenceRepository.findById(id).orElse(null);
 		if(entity != null) {
-			securityHelper.checkRole(Role.domain, entity.getDomainId());
+			securityHelper.checkRole(entity.getDomainId(), Role.domain, Role.educator);
 		}
 		return entity;
 	}
 	
 	@PostMapping("/api/competences")
 	public Competence create(@RequestBody Competence competence) throws Exception {
-		securityHelper.checkRole(Role.domain, competence.getDomainId());
+		securityHelper.checkRole(competence.getDomainId(), Role.domain);
 		return competenceRepository.save(competence);
 	}
 	
 	@PutMapping("/api/competences/{id}")
 	public Competence update(@PathVariable String id,
 			@RequestBody Competence competence) throws Exception {
-		securityHelper.checkRole(Role.domain, competence.getDomainId());
+		securityHelper.checkRole(competence.getDomainId(), Role.domain);
 		Competence c = competenceRepository.findById(id).orElse(null);
 		if(c == null) {
 			throw new EntityException("entity not found");
@@ -80,7 +80,7 @@ public class CompetenceController {
 	public Competence delete(@PathVariable String id) throws Exception {
 		Competence competence = competenceRepository.findById(id).orElse(null);
 		if(competence != null) {
-			securityHelper.checkRole(Role.domain, competence.getDomainId());
+			securityHelper.checkRole(competence.getDomainId(), Role.domain);
 			competenceRepository.deleteById(id);
 		}
 		return competence;

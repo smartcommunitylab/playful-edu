@@ -40,7 +40,7 @@ public class ConceptController {
 			List<Concept> list = conceptRepository.findByIdIn(ids);
 			return new PageImpl<>(list);
 		} else if(domainId != null) {
-			securityHelper.checkRole(Role.domain, domainId);
+			securityHelper.checkRole(domainId, Role.domain, Role.educator);
 			return conceptRepository.findByDomainId(domainId, pageRequest);	
 		}
 		return conceptRepository.findAll(pageRequest);
@@ -50,20 +50,21 @@ public class ConceptController {
 	public Concept getOne(@PathVariable String id) throws Exception {
 		Concept entity = conceptRepository.findById(id).orElse(null);
 		if(entity != null) {
-			securityHelper.checkRole(Role.domain, entity.getDomainId());
+			securityHelper.checkRole(entity.getDomainId(), Role.domain, Role.educator);
 		}
 		return entity;
 	}
 	
 	@PostMapping("/api/concepts")
 	public Concept create(@RequestBody Concept concept) throws Exception {
-		securityHelper.checkRole(Role.domain, concept.getDomainId());
+		securityHelper.checkRole(concept.getDomainId(), Role.domain);
 		return conceptRepository.save(concept);
 	}
 	
 	@PutMapping("/api/concepts/{id}")
 	public Concept update(@PathVariable String id,
 			@RequestBody Concept concept) throws Exception {
+		securityHelper.checkRole(concept.getDomainId(), Role.domain);
 		Concept c = conceptRepository.findById(id).orElse(null);
 		if(c == null) {
 			throw new EntityException("entity not found");
@@ -79,7 +80,7 @@ public class ConceptController {
 	public Concept delete(@PathVariable String id) throws Exception {
 		Concept concept = conceptRepository.findById(id).orElse(null);
 		if(concept != null) {
-			securityHelper.checkRole(Role.domain, concept.getDomainId());
+			securityHelper.checkRole(concept.getDomainId(), Role.domain);
 			conceptRepository.deleteById(id);
 		}
 		return concept;

@@ -48,11 +48,15 @@ public class SecurityHelper {
 		return subject;
 	}
 	
-	public void checkRole(Role role, String entityId) throws UnauthorizedException {
+	public void checkRole(String entityId, Role... role) throws UnauthorizedException {
 		String username = getCurrentPreferredUsername();
-		if(!checkAdmin(username) && !checkRole(username, role, entityId)) {
-			throw new UnauthorizedException("role not found"); 
+		if(checkAdmin(username))
+			return;
+		for(Role r : role) {
+			if(checkRole(username, r, entityId)) 
+				return;
 		}
+		throw new UnauthorizedException("role not found"); 
 	}
 	
 	public void checkAdminRole() throws UnauthorizedException {
@@ -61,11 +65,20 @@ public class SecurityHelper {
 		}
 	}
 	
+	public boolean hasRole(String entityId, Role role) throws UnauthorizedException {
+		String username = getCurrentPreferredUsername();
+		return checkRole(username, role, entityId);
+	}
+	
 	private boolean checkAdmin(String username) {
 		List<UserRole> list;
 		try {
 			list = roleCache.get(username);
-			return list.contains(Role.admin);
+			for(UserRole r : list) {
+				if(r.getRole().equals(Role.admin)) {
+					return true;
+				}
+			}
 		} catch (ExecutionException e) {
 			logger.warn(String.format("checkRole [%s]:%s", username, e.getMessage()));
 		}

@@ -41,7 +41,7 @@ public class EducatorController {
 			List<Educator> list = educatorRepository.findByIdIn(ids);
 			return new PageImpl<>(list);
 		} else if(domainId != null) {
-			securityHelper.checkRole(Role.domain, domainId);
+			securityHelper.checkRole(domainId, Role.domain, Role.educator);
 			if(text != null) {
 				return educatorRepository.findByDomainIdAndText(domainId, text, pageRequest);
 			} else {
@@ -55,21 +55,21 @@ public class EducatorController {
 	public Educator getOne(@PathVariable String id) throws Exception {
 		Educator entity = educatorRepository.findById(id).orElse(null);
 		if(entity != null) {
-			securityHelper.checkRole(Role.domain, entity.getDomainId());
+			securityHelper.checkRole(entity.getDomainId(), Role.domain, Role.educator);
 		}
 		return entity;
 	}
 	
 	@PostMapping("/api/educators")
 	public Educator create(@RequestBody Educator educator) throws Exception {
-		securityHelper.checkRole(Role.domain, educator.getDomainId());
+		securityHelper.checkRole(educator.getDomainId(), Role.domain);
 		return educatorRepository.save(educator);
 	}
 	
 	@PutMapping("/api/educators/{id}")
 	public Educator update(@PathVariable String id,
 			@RequestBody Educator educator) throws Exception {
-		securityHelper.checkRole(Role.domain, educator.getDomainId());
+		securityHelper.checkRole(educator.getDomainId(), Role.domain);
 		Educator e = educatorRepository.findById(id).orElse(null);
 		if(e == null) {
 			throw new EntityException("entity not found");
@@ -85,7 +85,7 @@ public class EducatorController {
 	public Educator delete(@PathVariable String id) throws Exception {
 		Educator educator = educatorRepository.findById(id).orElse(null);
 		if(educator != null) {
-			securityHelper.checkRole(Role.domain, educator.getDomainId());
+			securityHelper.checkRole(educator.getDomainId(), Role.domain);
 			educatorRepository.deleteById(id);
 		}
 		return educator;

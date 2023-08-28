@@ -41,7 +41,7 @@ public class LearnerController {
 			List<Learner> list = learnerRepository.findByIdIn(ids);
 			return new PageImpl<>(list);
 		} else if(domainId != null) {
-			securityHelper.checkRole(Role.domain, domainId);
+			securityHelper.checkRole(domainId, Role.domain, Role.educator);
 			if(text != null) {
 				return learnerRepository.findByDomainIdAndText(domainId, text, pageRequest);
 			} else {
@@ -55,21 +55,21 @@ public class LearnerController {
 	public Learner getOne(@PathVariable String id) throws Exception {
 		Learner entity = learnerRepository.findById(id).orElse(null);
 		if(entity != null) {
-			securityHelper.checkRole(Role.domain, entity.getDomainId());
+			securityHelper.checkRole(entity.getDomainId(), Role.domain);
 		}
 		return entity;
 	}
 	
 	@PostMapping("/api/learners")
 	public Learner create(@RequestBody Learner learner) throws Exception {
-		securityHelper.checkRole(Role.domain, learner.getDomainId());
+		securityHelper.checkRole(learner.getDomainId(), Role.domain);
 		return learnerRepository.save(learner);
 	}
 	
 	@PutMapping("/api/learners/{id}")
 	public Learner update(@PathVariable String id,
 			@RequestBody Learner learner) throws Exception {
-		securityHelper.checkRole(Role.domain, learner.getDomainId());
+		securityHelper.checkRole(learner.getDomainId(), Role.domain);
 		Learner l = learnerRepository.findById(id).orElse(null);
 		if(l == null) {
 			throw new EntityException("entity not found");
@@ -85,7 +85,7 @@ public class LearnerController {
 	public Learner delete(@PathVariable String id) throws Exception {
 		Learner learner = learnerRepository.findById(id).orElse(null);
 		if(learner != null) {
-			securityHelper.checkRole(Role.domain, learner.getDomainId());
+			securityHelper.checkRole(learner.getDomainId(), Role.domain);
 			learnerRepository.deleteById(id);
 		}
 		return learner;
