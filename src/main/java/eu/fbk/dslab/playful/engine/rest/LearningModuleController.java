@@ -49,17 +49,12 @@ public class LearningModuleController {
 		} else if(learningScenarioId != null) {
 			LearningScenario ls = learningScenarioRepository.findById(learningScenarioId).orElse(null);
 			if(ls != null) {
-				securityHelper.checkRole(ls.getDomainId(), Role.domain, Role.educator);
 				if(securityHelper.hasRole(ls.getDomainId(), Role.domain)) {
 					list = learningModuleRepository.findByLearningScenarioId(learningScenarioId, Sort.by(Direction.ASC, "position"));
-				} else {
-					if(entityManager.checkEducator(learningScenarioId)) {
-						list = learningModuleRepository.findByLearningScenarioId(learningScenarioId, Sort.by(Direction.ASC, "position"));	
-					}
+				} else if(entityManager.checkEducator(learningScenarioId)) {
+					list = learningModuleRepository.findByLearningScenarioId(learningScenarioId, Sort.by(Direction.ASC, "position"));	
 				}
 			}
-		} else {
-			list = learningModuleRepository.findAll();
 		}
 		return new PageImpl<>(list);
 	}
@@ -68,12 +63,9 @@ public class LearningModuleController {
 	public LearningModule getOne(@PathVariable String id) throws Exception {
 		LearningModule entity = learningModuleRepository.findById(id).orElse(null);
 		if(entity != null) {
-			securityHelper.checkRole(entity.getDomainId(), Role.domain, Role.educator);
-			if(securityHelper.hasRole(entity.getDomainId(), Role.educator)) {
-				if(!entityManager.checkEducator(entity.getLearningScenarioId())) {
-					throw new UnauthorizedException("role not found");
-				}
-			}
+			if(!securityHelper.hasRole(entity.getDomainId(), Role.domain) && 
+					!entityManager.checkEducator(entity.getLearningScenarioId()))
+				throw new UnauthorizedException("role not found");
 		}
 		return entity;
 	}
