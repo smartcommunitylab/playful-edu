@@ -17,7 +17,7 @@ import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.util.Assert;
 
-//@Configuration
+@Configuration
 public class SecurityConfig {
     @Value("${spring.security.oauth2.client.provider.oauthprovider.issuer-uri}")
     private String jwtIssuerUri;
@@ -25,20 +25,20 @@ public class SecurityConfig {
     @Value("${spring.security.oauth2.client.registration.oauthprovider.client-id}")
     private String jwtAudience;
     
-    @Configuration
-    public class APIConfigurationAdapter {
-
-        @Bean
-        public SecurityFilterChain filterChainAPI(HttpSecurity http) throws Exception {
-            http.authorizeHttpRequests(authorize -> authorize.requestMatchers("/api/**").authenticated())
-		        .oauth2ResourceServer(oauth2 ->  oauth2.jwt(jwt -> jwt.decoder(jwtDecoder())))
-		        // disable request cache, we override redirects but still better enforce it
-		        .requestCache((requestCache) -> requestCache.disable())
-            // we don't want a session for a REST backend
-            // each request should be evaluated
-		        .cors(cors -> cors.disable());
-            http.sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-            return http.build();
+    @Bean
+    public SecurityFilterChain filterChainAPI(HttpSecurity http) throws Exception {
+        http.authorizeHttpRequests(auth -> {
+        	auth.requestMatchers("/api/**").authenticated();
+        	auth.anyRequest().permitAll();
+        });
+    	http.oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.decoder(jwtDecoder())));
+    	// disable request cache, we override redirects but still better enforce it
+    	http.requestCache((requestCache) -> requestCache.disable());
+    	// we don't want a session for a REST backend
+    	// each request should be evaluated
+    	http.sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+    	http.csrf(csfr -> csfr.disable());
+        return http.build();
     }
     
     /*
@@ -58,7 +58,6 @@ public class SecurityConfig {
         return jwtDecoder;
     }
     
-  }
 	class JwtAudienceValidator implements OAuth2TokenValidator<Jwt> {
 	
 	    public final OAuth2Error error = new OAuth2Error("invalid_token", "The required audience is missing", null);
