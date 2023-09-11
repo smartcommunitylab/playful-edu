@@ -1,10 +1,21 @@
 package eu.fbk.dslab.playful.engine.conf;
 
+import java.util.ArrayList;
+import java.util.Collections;
+
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
 import org.springframework.security.oauth2.core.OAuth2Error;
 import org.springframework.security.oauth2.core.OAuth2TokenValidator;
@@ -15,6 +26,10 @@ import org.springframework.security.oauth2.jwt.JwtDecoders;
 import org.springframework.security.oauth2.jwt.JwtValidators;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
+import org.springframework.security.web.authentication.preauth.RequestHeaderAuthenticationFilter;
+import org.springframework.security.web.header.HeaderWriterFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.util.Assert;
 
 @Configuration
@@ -25,12 +40,62 @@ public class SecurityConfig {
     @Value("${spring.security.oauth2.client.registration.oauthprovider.client-id}")
     private String jwtAudience;
     
+    @Value("${security.x-auth-token}")
+    private String xAuthToken;
+    
     @Bean
-    public SecurityFilterChain filterChainAPI(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests(auth -> {
-        	auth.requestMatchers("/api/**").authenticated();
-        	auth.anyRequest().permitAll();
-        });
+    @Order(1)
+    public SecurityFilterChain xauthFilterChain(HttpSecurity http) throws Exception {
+        http.sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+        http.csrf(csfr -> csfr.disable());
+        //http.cors()
+        http.securityMatcher("/api/ext/**");
+        http.authorizeHttpRequests(auth -> auth.anyRequest().authenticated());
+        http.addFilterAfter(xauthRequestHeaderAuthenticationFilter(), HeaderWriterFilter.class);
+        return http.build();
+    }
+    
+    @Bean
+    public AuthenticationManager xauthAuthenticationManager() {
+        return new ProviderManager(Collections.singletonList(xauthRequestHeaderAuthenticationProvider()));
+    }
+    
+    @Bean
+    public RequestHeaderAuthenticationFilter xauthRequestHeaderAuthenticationFilter() {
+        RequestHeaderAuthenticationFilter filter = new RequestHeaderAuthenticationFilter();
+        filter.setPrincipalRequestHeader("x-auth");
+        filter.setExceptionIfHeaderMissing(false);
+        filter.setRequiresAuthenticationRequestMatcher(new AntPathRequestMatcher("/api/ext/**"));
+        filter.setAuthenticationManager(xauthAuthenticationManager());
+        return filter;
+    }
+    
+    @Bean
+    public AuthenticationProvider xauthRequestHeaderAuthenticationProvider() {
+    	return new XAuthRequestHeaderAuthenticationProvider();
+    }
+    
+    public class XAuthRequestHeaderAuthenticationProvider implements AuthenticationProvider {    	
+    	@Override
+    	public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+    		String authSecretKey = String.valueOf(authentication.getPrincipal());
+    		if(StringUtils.isBlank(authSecretKey) || !authSecretKey.equals(xAuthToken)) {
+    			throw new BadCredentialsException("Bad Request Header Credentials");
+    		}
+            return new PreAuthenticatedAuthenticationToken(authentication.getPrincipal(), null, new ArrayList<>());	
+    	}
+
+    	@Override
+    	public boolean supports(Class<?> authentication) {
+    		return authentication.equals(PreAuthenticatedAuthenticationToken.class);
+    	}
+    }
+    
+    @Bean
+    @Order(2)
+    public SecurityFilterChain jwtFilterChain(HttpSecurity http) throws Exception {
+    	http.securityMatcher("/api/**");
+    	http.authorizeHttpRequests(auth -> auth.anyRequest().authenticated());
     	http.oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.decoder(jwtDecoder())));
     	// disable request cache, we override redirects but still better enforce it
     	http.requestCache((requestCache) -> requestCache.disable());
@@ -77,4 +142,13 @@ public class SecurityConfig {
 	        }
 	    }
 	}
+	
+    @Bean
+    @Order(3) 
+	public SecurityFilterChain filterChainApp3(HttpSecurity http) throws Exception {
+        http.authorizeHttpRequests(auth -> {
+        	auth.anyRequest().permitAll();	
+        });		
+        return http.build();
+    }	
 }
