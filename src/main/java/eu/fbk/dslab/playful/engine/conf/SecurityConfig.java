@@ -46,12 +46,11 @@ public class SecurityConfig {
     @Bean
     @Order(1)
     public SecurityFilterChain xauthFilterChain(HttpSecurity http) throws Exception {
-        http.sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-        http.csrf(csfr -> csfr.disable());
-        //http.cors()
-        http.securityMatcher("/api/ext/**");
-        http.authorizeHttpRequests(auth -> auth.anyRequest().authenticated());
-        http.addFilterAfter(xauthRequestHeaderAuthenticationFilter(), HeaderWriterFilter.class);
+    	http.securityMatcher("/api/ext/**")
+        	.authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
+        	.addFilterAfter(xauthRequestHeaderAuthenticationFilter(), HeaderWriterFilter.class)
+        	.sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        	.csrf(csfr -> csfr.disable());
         return http.build();
     }
     
@@ -94,15 +93,15 @@ public class SecurityConfig {
     @Bean
     @Order(2)
     public SecurityFilterChain jwtFilterChain(HttpSecurity http) throws Exception {
-    	http.securityMatcher("/api/**");
-    	http.authorizeHttpRequests(auth -> auth.anyRequest().authenticated());
-    	http.oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.decoder(jwtDecoder())));
-    	// disable request cache, we override redirects but still better enforce it
-    	http.requestCache((requestCache) -> requestCache.disable());
-    	// we don't want a session for a REST backend
-    	// each request should be evaluated
-    	http.sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-    	http.csrf(csfr -> csfr.disable());
+    	http.securityMatcher("/api/**")
+    		.authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
+    		.oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.decoder(jwtDecoder())))
+    		// disable request cache, we override redirects but still better enforce it
+    		.requestCache((requestCache) -> requestCache.disable())
+	    	// we don't want a session for a REST backend
+	    	// each request should be evaluated
+	    	.sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+	    	.csrf(csfr -> csfr.disable());
         return http.build();
     }
     
