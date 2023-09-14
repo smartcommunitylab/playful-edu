@@ -15,6 +15,7 @@ public class Group {
 	private String domainId;
 	@Indexed
 	private String extId;
+	private String name;
 	private List<String> learners = new ArrayList<>();
 	
 	public String getId() {
@@ -40,6 +41,12 @@ public class Group {
 	}
 	public void setLearners(List<String> learners) {
 		this.learners = learners;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
 	}
 	
 
