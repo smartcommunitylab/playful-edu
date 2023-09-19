@@ -1,15 +1,20 @@
 package eu.fbk.dslab.playful.engine.integration;
 
 import java.util.Iterator;
+import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.TaskScheduler;
+import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -23,13 +28,16 @@ import eu.fbk.dslab.playful.engine.model.ExternalActivity.Type;
 import eu.fbk.dslab.playful.engine.model.Group;
 import eu.fbk.dslab.playful.engine.model.Learner;
 import eu.fbk.dslab.playful.engine.repository.EducatorRepository;
+import eu.fbk.dslab.playful.engine.repository.ExtModuleConfRepository;
 import eu.fbk.dslab.playful.engine.repository.ExternalActivityRepository;
 import eu.fbk.dslab.playful.engine.repository.GroupRepository;
 import eu.fbk.dslab.playful.engine.repository.LearnerRepository;
 
 @Service
-public class StandByMeService {
+public class StandByMeService implements ApplicationListener<ContextRefreshedEvent> {
 	private static transient final Logger logger = LoggerFactory.getLogger(StandByMeService.class);
+	
+	static final String extModuleConf = "STADBYME";
 	
     @Autowired
     RestTemplate restTemplate;
@@ -43,10 +51,18 @@ public class StandByMeService {
     @Autowired
     ExternalActivityRepository externalActivityRepository;
     
+    @Autowired
+    ExtModuleConfRepository extModuleConfRepository;
+    
+    @Autowired
+    TaskScheduler taskScheduler;
+    
     ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     
+    String endpoint = null;
+    
     public void getEducators(String domainId) {
-    	String address = "https://standbymeplatform.eu/wp-json/wp/v2/educators";
+    	String address = endpoint + "/educators";
     	try {
     		ResponseEntity<String> res = restTemplate.exchange(address, HttpMethod.GET, 
     				new HttpEntity<Object>(null, createHeaders()), String.class);
@@ -73,7 +89,7 @@ public class StandByMeService {
     }
     
     public void getLearners(String domainId) {
-    	String address = "https://standbymeplatform.eu/wp-json/wp/v2/learners";
+    	String address = endpoint + "/learners";
     	try {
     		ResponseEntity<String> res = restTemplate.exchange(address, HttpMethod.GET, 
     				new HttpEntity<Object>(null, createHeaders()), String.class);
@@ -100,7 +116,7 @@ public class StandByMeService {
     }
     
     public void getGroups(String domainId) {
-    	String address = "https://standbymeplatform.eu/wp-json/wp/v2/groups";
+    	String address = endpoint + "/groups";
     	try {
     		ResponseEntity<String> res = restTemplate.exchange(address, HttpMethod.GET, 
     				new HttpEntity<Object>(null, createHeaders()), String.class);
@@ -137,7 +153,7 @@ public class StandByMeService {
     }
 
     public void getActivities(String domainId) {
-    	String address = "https://standbymeplatform.eu/wp-json/wp/v2/activities";
+    	String address = endpoint + "/activities";
     	try {
     		ResponseEntity<String> res = restTemplate.exchange(address, HttpMethod.GET, 
     				new HttpEntity<Object>(null, createHeaders()), String.class);
@@ -171,6 +187,15 @@ public class StandByMeService {
 			logger.error(String.format("getActivities:%s", e.getMessage()));
 		}
     }
+    
+    public void importData(List<String> domains) {
+    	domains.forEach(domainId -> {
+    		getEducators(domainId);
+    		getLearners(domainId);
+    		getGroups(domainId);
+    		getActivities(domainId);
+    	});
+    }
 
     String getField(JsonNode node, String filed) {
     	return node.get(filed).asText().replace("\"", "");
@@ -180,7 +205,29 @@ public class StandByMeService {
 		HttpHeaders headers = new HttpHeaders();
 		headers.set("Accept", "application/json");
 		return headers;
+	}
+
+	@Override
+	public void onApplicationEvent(ContextRefreshedEvent event) {
+		ExtModuleConf conf = extModuleConfRepository.findById(extModuleConf).orElse(null);
+		if(conf != null) {
+			this.endpoint = conf.getEndpoint();
+			ImportTask task = new ImportTask(conf.getDomains());
+			taskScheduler.schedule(task, new CronTrigger(conf.getCron()));
+		}
 	}	
     
-	
+	private class ImportTask implements Runnable {
+		List<String> domains;
+		
+		public ImportTask(List<String> domains) {
+			this.domains = domains;
+		}
+		
+		@Override
+		public void run() {
+			importData(this.domains);
+		}
+		
+	}
 }
