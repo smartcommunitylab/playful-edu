@@ -19,6 +19,7 @@ public class LearningScenario {
 	private boolean publicScenario;
 	private List<String> learners = new ArrayList<>();
 	private List<String> educators = new ArrayList<>();
+	private boolean running = false;
 
 	public String getId() {
 		return id;
@@ -82,6 +83,14 @@ public class LearningScenario {
 
 	public void setPublicScenario(boolean publicScenario) {
 		this.publicScenario = publicScenario;
+	}
+
+	public boolean isRunning() {
+		return running;
+	}
+
+	public void setRunning(boolean running) {
+		this.running = running;
 	}
 
 

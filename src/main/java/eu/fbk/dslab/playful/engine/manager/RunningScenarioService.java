@@ -105,6 +105,8 @@ public class RunningScenarioService {
 			for(Learner learner : allLearners) {
 				runLearningScenario(learningScenario, learner);
 			}
+			learningScenario.setRunning(true);
+			learningScenarioRepository.save(learningScenario);
 		}
 	}
 	
