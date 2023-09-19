@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import eu.fbk.dslab.playful.engine.manager.DataManger;
 import eu.fbk.dslab.playful.engine.model.Learner;
 import eu.fbk.dslab.playful.engine.repository.LearnerRepository;
 
@@ -23,22 +24,21 @@ import eu.fbk.dslab.playful.engine.repository.LearnerRepository;
 public class LearnerController {
 	@Autowired
 	LearnerRepository learnerRepository;
+	@Autowired
+	DataManger dataManger;
 	
 	@GetMapping("/api/learners")
 	public Page<Learner> getList(
 			@RequestParam(required = false) List<String> ids,
 			@RequestParam(required = false) String domainId,
+			@RequestParam(required = false) String learningScenarioId,
 			@RequestParam(required = false) String text,
 			@ParameterObject Pageable pageRequest) {
 		if(ids != null) {
 			List<Learner> list = learnerRepository.findByIdIn(ids);
 			return new PageImpl<>(list);
 		} else if(domainId != null) {
-			if(text != null) {
-				return learnerRepository.findByDomainIdAndText(domainId, text, pageRequest);
-			} else {
-				return learnerRepository.findByDomainId(domainId, pageRequest);	
-			}
+			return dataManger.getLearnerScenario(domainId, learningScenarioId, text, pageRequest);
 		}
 		return learnerRepository.findAll(pageRequest);
 	}
