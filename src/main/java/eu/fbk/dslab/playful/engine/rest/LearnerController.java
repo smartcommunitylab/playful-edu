@@ -62,11 +62,7 @@ public class LearnerController {
 	
 	@DeleteMapping("/api/learners/{id}")
 	public Learner delete(@PathVariable String id) {
-		Learner learner = learnerRepository.findById(id).orElse(null);
-		if(learner != null) {
-			learnerRepository.deleteById(id);
-		}
-		return learner;
+		return dataManger.removeLearner(id);
 	}
 
 }

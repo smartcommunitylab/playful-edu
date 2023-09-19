@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import eu.fbk.dslab.playful.engine.manager.DataManger;
 import eu.fbk.dslab.playful.engine.model.Educator;
 import eu.fbk.dslab.playful.engine.repository.EducatorRepository;
 
@@ -23,6 +24,8 @@ import eu.fbk.dslab.playful.engine.repository.EducatorRepository;
 public class EducatorController {
 	@Autowired
 	EducatorRepository educatorRepository;
+	@Autowired
+	DataManger dataManger;
 	
 	@GetMapping("/api/educators")
 	public Page<Educator> getList(
@@ -62,11 +65,7 @@ public class EducatorController {
 	
 	@DeleteMapping("/api/educators/{id}")
 	public Educator delete(@PathVariable String id) {
-		Educator educator = educatorRepository.findById(id).orElse(null);
-		if(educator != null) {
-			educatorRepository.deleteById(id);
-		}
-		return educator;
+		return dataManger.removeEducator(id);
 	}
 
 }
