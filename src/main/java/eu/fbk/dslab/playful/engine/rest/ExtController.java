@@ -2,6 +2,7 @@ package eu.fbk.dslab.playful.engine.rest;
 
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +20,7 @@ import eu.fbk.dslab.playful.engine.model.Educator;
 import eu.fbk.dslab.playful.engine.model.Learner;
 import eu.fbk.dslab.playful.engine.model.LearningFragmentRun;
 import eu.fbk.dslab.playful.engine.model.LearningScenarioRun;
+import eu.fbk.dslab.playful.engine.repository.LearnerRepository;
 
 @RestController
 public class ExtController {
@@ -27,6 +29,9 @@ public class ExtController {
 	
 	@Autowired
 	ScenarioService scenarioService;
+	
+	@Autowired
+	LearnerRepository learnerRepository;
 	
 	@PutMapping("/api/ext/learningscenario/run")
 	public ResponseEntity<Void> runLearningScenario(
@@ -151,6 +156,30 @@ public class ExtController {
 		} catch (HttpClientErrorException e) {
 			return new ResponseEntity<>(null, e.getStatusCode());
 		}		
+	}
+	
+	@PutMapping("/api/ext/register/learner")
+	public ResponseEntity<Void> registerUser(
+			@RequestParam String domainId,
+			@RequestParam String learningScenarioId,
+			@RequestParam String nickname,
+			@RequestParam(required = false) String email) {
+		try {
+			Learner learner = learnerRepository.findOneByDomainIdAndNickname(domainId, nickname);
+			if(learner == null) {
+				learner = new Learner();
+				learner.setDomainId(domainId);
+				learner.setNickname(nickname);
+				if(StringUtils.isNotBlank(email)) {
+					learner.setEmail(email);
+				}
+				learnerRepository.save(learner);
+			}
+			runningScenarioService.runLearnerLearningScenario(learningScenarioId, learner.getId());
+			return ResponseEntity.ok(null);			
+		} catch (HttpClientErrorException e) {
+			return new ResponseEntity<>(null, e.getStatusCode());
+		}
 	}
 
 }

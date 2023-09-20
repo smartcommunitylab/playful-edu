@@ -110,7 +110,7 @@ public class RunningScenarioService {
 		}
 	}
 	
-	public void runLearnerLearningScenario(String learningScenarioId, String learnerId) {
+	public void runLearnerLearningScenario(String learningScenarioId, String learnerId) throws HttpClientErrorException {
 		LearningScenario learningScenario = learningScenarioRepository.findById(learningScenarioId).orElse(null);
 		Learner learner = learnerRepository.findById(learnerId).orElse(null);
 		if((learningScenario != null) && (learner != null)) {
