@@ -101,19 +101,19 @@ public class RunningScenarioService {
 	public void runLearningScenario(String learningScenarioId) throws HttpClientErrorException {
 		LearningScenario learningScenario = learningScenarioRepository.findById(learningScenarioId).orElse(null);
 		if(learningScenario != null) {
+			learningScenario.setRunning(true);
+			learningScenarioRepository.save(learningScenario);
 			List<Learner> allLearners = learnerRepository.findByIdIn(learningScenario.getLearners());
 			for(Learner learner : allLearners) {
 				runLearningScenario(learningScenario, learner);
 			}
-			learningScenario.setRunning(true);
-			learningScenarioRepository.save(learningScenario);
 		}
 	}
 	
 	public void runLearnerLearningScenario(String learningScenarioId, String learnerId) throws HttpClientErrorException {
 		LearningScenario learningScenario = learningScenarioRepository.findById(learningScenarioId).orElse(null);
 		Learner learner = learnerRepository.findById(learnerId).orElse(null);
-		if((learningScenario != null) && (learner != null)) {
+		if((learningScenario != null) && (learner != null) && learningScenario.isRunning()) {
 			runLearningScenario(learningScenario, learner);
 		}
 	}
