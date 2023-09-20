@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import eu.fbk.dslab.playful.engine.manager.DataManger;
+import eu.fbk.dslab.playful.engine.manager.DataManager;
 import eu.fbk.dslab.playful.engine.model.Learner;
 import eu.fbk.dslab.playful.engine.repository.LearnerRepository;
 
@@ -25,7 +25,7 @@ public class LearnerController {
 	@Autowired
 	LearnerRepository learnerRepository;
 	@Autowired
-	DataManger dataManger;
+	DataManager dataManager;
 	
 	@GetMapping("/api/learners")
 	public Page<Learner> getList(
@@ -38,7 +38,7 @@ public class LearnerController {
 			List<Learner> list = learnerRepository.findByIdIn(ids);
 			return new PageImpl<>(list);
 		} else if(domainId != null) {
-			return dataManger.getLearnerScenario(domainId, learningScenarioId, text, pageRequest);
+			return dataManager.getLearnerScenario(domainId, learningScenarioId, text, pageRequest);
 		}
 		return learnerRepository.findAll(pageRequest);
 	}
@@ -62,7 +62,7 @@ public class LearnerController {
 	
 	@DeleteMapping("/api/learners/{id}")
 	public Learner delete(@PathVariable String id) {
-		return dataManger.removeLearner(id);
+		return dataManager.removeLearner(id);
 	}
 
 }

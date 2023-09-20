@@ -1,5 +1,6 @@
 package eu.fbk.dslab.playful.engine.manager;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -20,23 +21,28 @@ import eu.fbk.dslab.playful.engine.model.Educator;
 import eu.fbk.dslab.playful.engine.model.ExternalActivity;
 import eu.fbk.dslab.playful.engine.model.Learner;
 import eu.fbk.dslab.playful.engine.model.LearningScenario;
+import eu.fbk.dslab.playful.engine.model.LearningScenarioRun;
 import eu.fbk.dslab.playful.engine.repository.ActivityRepository;
+import eu.fbk.dslab.playful.engine.repository.ActivityStatusRepository;
 import eu.fbk.dslab.playful.engine.repository.CompetenceRepository;
 import eu.fbk.dslab.playful.engine.repository.ConceptRepository;
 import eu.fbk.dslab.playful.engine.repository.EducatorRepository;
 import eu.fbk.dslab.playful.engine.repository.ExternalActivityRepository;
 import eu.fbk.dslab.playful.engine.repository.LearnerRepository;
 import eu.fbk.dslab.playful.engine.repository.LearningScenarioRepository;
+import eu.fbk.dslab.playful.engine.repository.LearningScenarioRunRepository;
 
 @Service
-public class DataManger {
-	private static transient final Logger logger = LoggerFactory.getLogger(DataManger.class);
+public class DataManager {
+	private static transient final Logger logger = LoggerFactory.getLogger(DataManager.class);
 	
 	@Autowired
 	MongoTemplate mongoTemplate;
 
 	@Autowired
 	LearningScenarioRepository learningScenarioRepository;
+	@Autowired
+	LearningScenarioRunRepository learningScenarioRunRepository;
 	@Autowired
 	LearnerRepository learnerRepository;
 	@Autowired
@@ -48,7 +54,12 @@ public class DataManger {
 	@Autowired
 	ExternalActivityRepository externalActivityRepository;
 	@Autowired
+	ActivityStatusRepository activityStatusRepository;
+	@Autowired
 	CompetenceRepository competenceRepository;	
+	
+	@Autowired
+	RunningScenarioService runningScenarioService;
 	
 	public Page<Learner> getLearnerScenario(String domainId, String learningScenarioId, 
 			String text, Pageable pageRequest) {
@@ -133,5 +144,50 @@ public class DataManger {
 			});
 		}
 		return educator;
+	}
+	
+	public void removeLearningScenarioRun(String learningScenarioId, String learnerId) {
+		LearningScenarioRun scenarioRun = learningScenarioRunRepository.findByLearningScenarioIdAndLearnerId(learningScenarioId, learnerId);
+		scenarioRun.getModules().forEach(module -> {
+			module.getFragments().forEach(fragment -> {
+				fragment.getActivityStatusIds().forEach(activityId -> {
+					activityStatusRepository.deleteById(activityId);
+				});
+			});
+		});
+		learningScenarioRunRepository.deleteById(scenarioRun.getId());
+	}
+	
+	public LearningScenario updateLearningScenario(LearningScenario learningScenario) {
+		LearningScenario lsDb = learningScenarioRepository.findById(learningScenario.getId()).orElse(null);
+		if(lsDb != null) {
+			if(lsDb.isRunning()) {
+				//check learners
+				List<String> toAdd = new ArrayList<>();
+				List<String> toRemove = new ArrayList<>();
+				learningScenario.getLearners().forEach(learnerId -> {
+					if(!lsDb.getLearners().contains(learnerId)) {
+						toAdd.add(learnerId);
+					}
+				});
+				lsDb.getLearners().forEach(learnerId -> {
+					if(!learningScenario.getLearners().contains(learnerId)) {
+						toRemove.add(learnerId);
+					}
+				});
+				toAdd.forEach(learnerId -> {
+					try {
+						runningScenarioService.runLearnerLearningScenario(learningScenario.getId(), learnerId);
+					} catch (Exception e) {
+						logger.error(String.format("updateLearningScenario [add]: %s - %s - %s", learningScenario.getId(), learnerId, e.getMessage()));
+					}
+				});
+				toRemove.forEach(learnerId -> {
+					removeLearningScenarioRun(learningScenario.getId(), learnerId);
+				});
+			}
+			learningScenarioRepository.save(learningScenario);
+		}
+		return learningScenario;
 	}
 }

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import eu.fbk.dslab.playful.engine.manager.DataManager;
 import eu.fbk.dslab.playful.engine.model.LearningScenario;
 import eu.fbk.dslab.playful.engine.repository.LearningScenarioRepository;
 
@@ -23,6 +24,9 @@ import eu.fbk.dslab.playful.engine.repository.LearningScenarioRepository;
 public class LearningScenarioController {
 	@Autowired
 	LearningScenarioRepository learningScenarioRepository;
+	
+	@Autowired
+	DataManager dataManager;
 	
 	@GetMapping("/api/scenarios")
 	public Page<LearningScenario> getList(
@@ -52,7 +56,7 @@ public class LearningScenarioController {
 	public LearningScenario update(@PathVariable String id,
 			@RequestBody LearningScenario learningScenario) {
 		learningScenario.setId(id);
-		return learningScenarioRepository.save(learningScenario);
+		return dataManager.updateLearningScenario(learningScenario);
 	}
 	
 	@DeleteMapping("/api/scenarios/{id}")

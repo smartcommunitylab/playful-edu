@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import eu.fbk.dslab.playful.engine.manager.DataManger;
+import eu.fbk.dslab.playful.engine.manager.DataManager;
 import eu.fbk.dslab.playful.engine.model.Concept;
 import eu.fbk.dslab.playful.engine.repository.ConceptRepository;
 
@@ -25,7 +25,7 @@ public class ConceptController {
 	@Autowired
 	ConceptRepository conceptRepository;
 	@Autowired
-	DataManger dataManger;
+	DataManager dataManager;
 	
 	@GetMapping("/api/concepts")
 	public Page<Concept> getList(
@@ -60,7 +60,7 @@ public class ConceptController {
 	
 	@DeleteMapping("/api/concepts/{id}")
 	public Concept delete(@PathVariable String id) {
-		return dataManger.removeConcept(id);
+		return dataManager.removeConcept(id);
 	}
 
 }
