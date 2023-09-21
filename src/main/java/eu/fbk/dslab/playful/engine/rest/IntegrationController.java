@@ -1,62 +1,55 @@
 package eu.fbk.dslab.playful.engine.rest;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.HttpClientErrorException;
 
-import eu.fbk.dslab.playful.engine.integration.StandByMeService;
+import eu.fbk.dslab.playful.engine.manager.IntegrationService;
+import eu.fbk.dslab.playful.engine.model.Educator;
+import eu.fbk.dslab.playful.engine.model.ExternalActivity;
+import eu.fbk.dslab.playful.engine.model.Group;
+import eu.fbk.dslab.playful.engine.model.Learner;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 @RestController
 public class IntegrationController {
-
 	@Autowired
-	StandByMeService standByMeService;
+	IntegrationService integrationService;
 	
-	@GetMapping("/api/int/standbyme/educators")
-	public ResponseEntity<Void> getEducatorsStandByMe(
-			@RequestParam String domainId) {
-		try {
-			standByMeService.getEducators(domainId);
-			return ResponseEntity.ok(null);
-		} catch (HttpClientErrorException e) {
-			return new ResponseEntity<>(null, e.getStatusCode());
-		}
+	@PostMapping("/api/ext/int/educators")
+	public ResponseEntity<Void> importEducators(
+			@RequestParam String domainId,
+			@RequestBody List<Educator> educators) {
+		integrationService.importEducators(domainId, educators);
+		return ResponseEntity.ok(null);
 	}
 	
-	@GetMapping("/api/int/standbyme/learners")
-	public ResponseEntity<Void> getLearnersStandByMe(
-			@RequestParam String domainId) {
-		try {
-			standByMeService.getLearners(domainId);
-			return ResponseEntity.ok(null);
-		} catch (HttpClientErrorException e) {
-			return new ResponseEntity<>(null, e.getStatusCode());
-		}
+	@PostMapping("/api/ext/int/learners")
+	public ResponseEntity<Void> importLearners(
+			@RequestParam String domainId,
+			@RequestBody List<Learner> learners) {
+		integrationService.importLearners(domainId, learners);
+		return ResponseEntity.ok(null);		
 	}
 	
-	@GetMapping("/api/int/standbyme/groups")
-	public ResponseEntity<Void> getGroupsStandByMe(
-			@RequestParam String domainId) {
-		try {
-			standByMeService.getGroups(domainId);
-			return ResponseEntity.ok(null);
-		} catch (HttpClientErrorException e) {
-			return new ResponseEntity<>(null, e.getStatusCode());
-		}
+	@PostMapping("/api/ext/int/groups")
+	public ResponseEntity<Void> importGroups(
+			@RequestParam String domainId,
+			@RequestBody List<Group> groups) {
+		integrationService.importGroups(domainId, groups);
+		return ResponseEntity.ok(null);
 	}
 	
-	@GetMapping("/api/int/standbyme/activities")
-	public ResponseEntity<Void> getActivitiesStandByMe(
-			@RequestParam String domainId) {
-		try {
-			standByMeService.getActivities(domainId);
-			return ResponseEntity.ok(null);
-		} catch (HttpClientErrorException e) {
-			return new ResponseEntity<>(null, e.getStatusCode());
-		}
+	@PostMapping("/api/ext/int/activities")
+	public ResponseEntity<Void> importExtActivities(
+			@RequestParam String domainId,
+			@RequestBody List<ExternalActivity> activities) {
+		integrationService.importExtActivities(domainId, activities);
+		return ResponseEntity.ok(null);
 	}
 
 }
