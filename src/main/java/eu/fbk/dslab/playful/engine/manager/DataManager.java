@@ -78,8 +78,10 @@ public class DataManager {
         }
         
         Query query = new Query(criteria);
+        long count = mongoTemplate.count(query, Learner.class);
+        query.with(pageRequest);
         List<Learner> result = mongoTemplate.find(query, Learner.class);
-		return new PageImpl<>(result, pageRequest, result.size());
+		return new PageImpl<>(result, pageRequest, count);
 	}
 	
 	public Concept removeConcept(String id) {
