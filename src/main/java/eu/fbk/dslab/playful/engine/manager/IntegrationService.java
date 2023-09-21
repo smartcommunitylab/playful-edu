@@ -12,7 +12,6 @@ import eu.fbk.dslab.playful.engine.model.ExternalActivity;
 import eu.fbk.dslab.playful.engine.model.Group;
 import eu.fbk.dslab.playful.engine.model.Learner;
 import eu.fbk.dslab.playful.engine.repository.EducatorRepository;
-import eu.fbk.dslab.playful.engine.repository.ExtModuleConfRepository;
 import eu.fbk.dslab.playful.engine.repository.ExternalActivityRepository;
 import eu.fbk.dslab.playful.engine.repository.GroupRepository;
 import eu.fbk.dslab.playful.engine.repository.LearnerRepository;
@@ -29,9 +28,6 @@ public class IntegrationService {
     GroupRepository groupRepository;
     @Autowired
     ExternalActivityRepository externalActivityRepository;
-    
-    @Autowired
-    ExtModuleConfRepository extModuleConfRepository;
     
     public void importEducators(String domainId, List<Educator> educators) {
     	for(Educator educator : educators) {
