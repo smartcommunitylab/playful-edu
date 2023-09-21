@@ -14,6 +14,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 
 import eu.fbk.dslab.playful.engine.model.Activity;
 import eu.fbk.dslab.playful.engine.model.Concept;
@@ -191,5 +192,28 @@ public class DataManager {
 			learningScenarioRepository.save(learningScenario);
 		}
 		return learningScenario;
+	}
+	
+	public void registerUser(String domainId, String learningScenarioId, 
+			String nickname, String email) throws HttpClientErrorException {
+		LearningScenario ls = learningScenarioRepository.findById(learningScenarioId).orElse(null);
+		if(ls != null) {
+			Learner learner = learnerRepository.findOneByDomainIdAndNickname(domainId, nickname);
+			if(learner == null) {
+				learner = new Learner();
+				learner.setDomainId(domainId);
+				learner.setNickname(nickname);
+				if(StringUtils.isNotBlank(email)) {
+					learner.setEmail(email);
+				}
+				learnerRepository.save(learner);
+			}
+			if(!ls.getLearners().contains(learner.getId())) {
+				ls.getLearners().add(learner.getId());
+				learningScenarioRepository.save(ls);
+			}
+			runningScenarioService.runLearnerLearningScenario(learningScenarioId, learner.getId());		
+			
+		}
 	}
 }
