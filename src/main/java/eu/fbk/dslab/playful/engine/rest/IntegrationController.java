@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -13,7 +14,6 @@ import eu.fbk.dslab.playful.engine.model.Educator;
 import eu.fbk.dslab.playful.engine.model.ExternalActivity;
 import eu.fbk.dslab.playful.engine.model.Group;
 import eu.fbk.dslab.playful.engine.model.Learner;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 @RestController
 public class IntegrationController {

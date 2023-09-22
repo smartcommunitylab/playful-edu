@@ -42,6 +42,7 @@ public class IntegrationService {
     		ed.setFirstname(educator.getFirstname());
     		ed.setLastname(educator.getLastname());
     		educatorRepository.save(ed);
+    		logger.info(String.format("importEducators[%s]:%s", domainId, ed.getId()));
     	}
     }
     
@@ -57,7 +58,8 @@ public class IntegrationService {
     		l.setEmail(learner.getEmail());
     		l.setFirstname(learner.getFirstname());
     		l.setLastname(learner.getLastname());
-    		learnerRepository.save(l);    		
+    		learnerRepository.save(l); 
+    		logger.info(String.format("importLearners[%s]:%s", domainId, l.getId()));
     	}
     }
     
@@ -78,7 +80,8 @@ public class IntegrationService {
     				g.getLearners().add(l.getId());
     			}    			    			
     		}
-    		groupRepository.save(g);    		
+    		groupRepository.save(g);    
+    		logger.info(String.format("importGroups[%s]:%s", domainId, g.getId()));
     	}
     }
 
@@ -96,7 +99,8 @@ public class IntegrationService {
     		act.setLanguage(activity.getLanguage());
     		act.setExtUrl(activity.getExtUrl());
     		act.setType(activity.getType());
-    		externalActivityRepository.save(act);    		
+    		externalActivityRepository.save(act);   
+    		logger.info(String.format("importExtActivities[%s]:%s", domainId, act.getId()));
     	}
     }
     
