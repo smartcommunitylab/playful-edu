@@ -18,11 +18,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 import eu.fbk.dslab.playful.engine.model.Domain;
 import eu.fbk.dslab.playful.engine.repository.DomainRepository;
+import eu.fbk.dslab.playful.engine.security.SecurityHelper;
 
 @RestController
 public class DomainController {
 	@Autowired
 	DomainRepository domainRepository;
+	
+	@Autowired
+	SecurityHelper securityHelper;
 	
 	@GetMapping("/api/domains")
 	public Page<Domain> getList(
@@ -41,19 +45,22 @@ public class DomainController {
 	}
 	
 	@PostMapping("/api/domains")
-	public Domain create(@RequestBody Domain domain) {
+	public Domain create(@RequestBody Domain domain) throws Exception {
+		securityHelper.checkAdminRole();
 		return domainRepository.save(domain);
 	}
 	
 	@PutMapping("/api/domains/{id}")
 	public Domain update(@PathVariable String id,
-			@RequestBody Domain domain) {
+			@RequestBody Domain domain) throws Exception {
+		securityHelper.checkAdminRole();
 		domain.setId(id);
 		return domainRepository.save(domain);
 	}
 	
 	@DeleteMapping("/api/domains/{id}")
-	public Domain delete(@PathVariable String id) {
+	public Domain delete(@PathVariable String id) throws Exception {
+		securityHelper.checkAdminRole();
 		Domain domain = domainRepository.findById(id).orElse(null);
 		if(domain != null) {
 			domainRepository.deleteById(id);

@@ -16,6 +16,16 @@ spring:
     multipart:
       max-file-size: ${SPRING_HTTP_MULTIPART_MAX_FILE_SIZE:10MB}
       max-request-size: ${SPRING_HTTP_MULTIPART_MAX_REQUEST_SIZE:10MB}
+  security:
+    oauth2:
+      client:
+        provider:
+          oauthprovider:
+            issuer-uri: ${AAC_ISSUER_URI:}
+        registration:
+          oauthprovider:
+            authorization-grant-type: client_credentials
+            client-id: ${AAC_CLIENT_ID:}
 
 springdoc:
   api-docs:
@@ -25,3 +35,6 @@ springdoc:
   swagger-ui:
     path: /swagger-ui.html
     enabled: true 
+
+security:
+  x-auth-token: ${X_AUTH_TOKEN:}    
