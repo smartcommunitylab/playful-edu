@@ -23,11 +23,10 @@ import eu.fbk.dslab.playful.engine.model.LearningModule;
 import eu.fbk.dslab.playful.engine.model.LearningScenario;
 import eu.fbk.dslab.playful.engine.repository.LearningModuleRepository;
 import eu.fbk.dslab.playful.engine.repository.LearningScenarioRepository;
-import eu.fbk.dslab.playful.engine.security.SecurityHelper;
 import eu.fbk.dslab.playful.engine.security.UserRole.Role;
 
 @RestController
-public class LearningModuleController {
+public class LearningModuleController extends PlayfulController {
 	@Autowired
 	LearningModuleRepository learningModuleRepository;
 	@Autowired
@@ -35,9 +34,6 @@ public class LearningModuleController {
 	
 	@Autowired
 	EntityManager entityManager;
-	
-	@Autowired
-	SecurityHelper securityHelper;
 	
 	@GetMapping("/api/modules")
 	public Page<LearningModule> getList(

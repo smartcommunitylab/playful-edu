@@ -16,23 +16,20 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import eu.fbk.dslab.playful.engine.manager.DataManager;
 import eu.fbk.dslab.playful.engine.exception.EntityException;
 import eu.fbk.dslab.playful.engine.exception.UnauthorizedException;
+import eu.fbk.dslab.playful.engine.manager.DataManager;
 import eu.fbk.dslab.playful.engine.model.Concept;
 import eu.fbk.dslab.playful.engine.repository.ConceptRepository;
-import eu.fbk.dslab.playful.engine.security.SecurityHelper;
 import eu.fbk.dslab.playful.engine.security.UserRole.Role;
 
 @RestController
-public class ConceptController {
+public class ConceptController extends PlayfulController {
 	@Autowired
 	ConceptRepository conceptRepository;
-	@Autowired
-	DataManager dataManager;
 	
 	@Autowired
-	SecurityHelper securityHelper;
+	DataManager dataManager;
 	
 	@GetMapping("/api/concepts")
 	public Page<Concept> getList(
@@ -84,7 +81,7 @@ public class ConceptController {
 		Concept concept = conceptRepository.findById(id).orElse(null);
 		if(concept != null) {
 			securityHelper.checkRole(concept.getDomainId(), Role.domain);
-			return dataManager.removeConcept(id)
+			return dataManager.removeConcept(id);
 		}
 		return concept;
 	}

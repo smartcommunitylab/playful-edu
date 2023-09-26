@@ -30,9 +30,10 @@ import eu.fbk.dslab.playful.engine.repository.EducatorRepository;
 import eu.fbk.dslab.playful.engine.repository.ExternalActivityRepository;
 import eu.fbk.dslab.playful.engine.repository.GroupRepository;
 import eu.fbk.dslab.playful.engine.repository.LearnerRepository;
+import eu.fbk.dslab.playful.engine.security.UserRole.Role;
 
 @RestController
-public class ImportController {
+public class ImportController extends PlayfulController {
 
 	@Autowired
 	LearnerRepository learnerRepository;
@@ -45,11 +46,12 @@ public class ImportController {
 	
 	@Autowired
 	ExternalActivityRepository externalActivityRepository;
-	
+
 	@PostMapping(value = "/api/import/learner/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public ResponseEntity<List<String>> uploadLearner(
 			@RequestParam String domainId,
-			@RequestParam("data") MultipartFile data) {
+			@RequestParam("data") MultipartFile data) throws Exception {
+		securityHelper.checkRole(domainId, Role.domain);
 		List<String> result = new ArrayList<>();
 		MappingIterator<Map<String, String>> iterator = null;
 		try {
@@ -92,7 +94,8 @@ public class ImportController {
 	@PostMapping(value = "/api/import/educator/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public ResponseEntity<List<String>> uploadEducator(
 			@RequestParam String domainId,
-			@RequestParam("data") MultipartFile data) {
+			@RequestParam("data") MultipartFile data) throws Exception {
+		securityHelper.checkRole(domainId, Role.domain);
 		List<String> result = new ArrayList<>();
 		MappingIterator<Map<String, String>> iterator = null;
 		try {
@@ -135,7 +138,8 @@ public class ImportController {
 	@PostMapping(value = "/api/import/group/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public ResponseEntity<List<String>> uploadGroup(
 			@RequestParam String domainId,
-			@RequestParam("data") MultipartFile data) {
+			@RequestParam("data") MultipartFile data) throws Exception {
+		securityHelper.checkRole(domainId, Role.domain);
 		List<String> result = new ArrayList<>();
 		MappingIterator<Map<String, String>> iterator = null;
 		try {
@@ -176,7 +180,8 @@ public class ImportController {
 	@PostMapping(value = "/api/import/extactivity/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public ResponseEntity<List<String>> uploadExternalActivity(
 			@RequestParam String domainId,
-			@RequestParam("data") MultipartFile data) {
+			@RequestParam("data") MultipartFile data) throws Exception {
+		securityHelper.checkRole(domainId, Role.domain);
 		List<String> result = new ArrayList<>();
 		MappingIterator<Map<String, String>> iterator = null;
 		try {

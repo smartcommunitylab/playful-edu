@@ -18,15 +18,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import eu.fbk.dslab.playful.engine.model.Domain;
 import eu.fbk.dslab.playful.engine.repository.DomainRepository;
-import eu.fbk.dslab.playful.engine.security.SecurityHelper;
 
 @RestController
-public class DomainController {
+public class DomainController extends PlayfulController {
 	@Autowired
 	DomainRepository domainRepository;
-	
-	@Autowired
-	SecurityHelper securityHelper;
 	
 	@GetMapping("/api/domains")
 	public Page<Domain> getList(

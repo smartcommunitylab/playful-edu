@@ -20,16 +20,12 @@ import eu.fbk.dslab.playful.engine.exception.EntityException;
 import eu.fbk.dslab.playful.engine.exception.UnauthorizedException;
 import eu.fbk.dslab.playful.engine.model.Competence;
 import eu.fbk.dslab.playful.engine.repository.CompetenceRepository;
-import eu.fbk.dslab.playful.engine.security.SecurityHelper;
 import eu.fbk.dslab.playful.engine.security.UserRole.Role;
 
 @RestController
-public class CompetenceController {
+public class CompetenceController extends PlayfulController {
 	@Autowired
 	CompetenceRepository competenceRepository;
-
-	@Autowired
-	SecurityHelper securityHelper;
 
 	@GetMapping("/api/competences")
 	public Page<Competence> getList(

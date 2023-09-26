@@ -16,25 +16,21 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import eu.fbk.dslab.playful.engine.manager.DataManager;
 import eu.fbk.dslab.playful.engine.exception.EntityException;
 import eu.fbk.dslab.playful.engine.exception.UnauthorizedException;
+import eu.fbk.dslab.playful.engine.manager.DataManager;
 import eu.fbk.dslab.playful.engine.manager.EntityManager;
 import eu.fbk.dslab.playful.engine.model.LearningScenario;
 import eu.fbk.dslab.playful.engine.repository.LearningScenarioRepository;
-import eu.fbk.dslab.playful.engine.security.SecurityHelper;
 import eu.fbk.dslab.playful.engine.security.UserRole.Role;
 
 @RestController
-public class LearningScenarioController {
+public class LearningScenarioController extends PlayfulController {
 	@Autowired
 	LearningScenarioRepository learningScenarioRepository;
 	
 	@Autowired
 	DataManager dataManager;
-	
-	@Autowired
-	SecurityHelper securityHelper;
 	
 	@Autowired
 	EntityManager entityManager;

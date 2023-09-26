@@ -14,17 +14,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import eu.fbk.dslab.playful.engine.repository.UserRoleRepository;
-import eu.fbk.dslab.playful.engine.security.SecurityHelper;
 import eu.fbk.dslab.playful.engine.security.UserRole;
 import eu.fbk.dslab.playful.engine.utils.Utils;
 
 @RestController
-public class AdminController {
+public class AdminController extends PlayfulController {
 	@Autowired
 	UserRoleRepository userRoleRepository;
-	
-	@Autowired
-	SecurityHelper securityHelper;
 	
 	@GetMapping("/api/roles")
 	public Page<UserRole> getList(

@@ -20,16 +20,12 @@ import eu.fbk.dslab.playful.engine.exception.EntityException;
 import eu.fbk.dslab.playful.engine.exception.UnauthorizedException;
 import eu.fbk.dslab.playful.engine.model.ExternalActivity;
 import eu.fbk.dslab.playful.engine.repository.ExternalActivityRepository;
-import eu.fbk.dslab.playful.engine.security.SecurityHelper;
 import eu.fbk.dslab.playful.engine.security.UserRole.Role;
 
 @RestController
-public class ExternalActivityController {
+public class ExternalActivityController extends PlayfulController {
 	@Autowired
 	ExternalActivityRepository externalActivityRepository;
-	
-	@Autowired
-	SecurityHelper securityHelper;
 	
 	@GetMapping("/api/external-activities")
 	public Page<ExternalActivity> getList(

@@ -16,25 +16,21 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import eu.fbk.dslab.playful.engine.manager.DataManager;
 import eu.fbk.dslab.playful.engine.exception.EntityException;
 import eu.fbk.dslab.playful.engine.exception.UnauthorizedException;
+import eu.fbk.dslab.playful.engine.manager.DataManager;
 import eu.fbk.dslab.playful.engine.model.Learner;
 import eu.fbk.dslab.playful.engine.repository.LearnerRepository;
-import eu.fbk.dslab.playful.engine.security.SecurityHelper;
 import eu.fbk.dslab.playful.engine.security.UserRole.Role;
 
 @RestController
-public class LearnerController {
+public class LearnerController extends PlayfulController {
 	@Autowired
 	LearnerRepository learnerRepository;
 	@Autowired
 	DataManager dataManager;
 	
-	@Autowired
-	SecurityHelper securityHelper;
-	
-	@GetMapping("/api/learners")
+		@GetMapping("/api/learners")
 	public Page<Learner> getList(
 			@RequestParam(required = false) List<String> ids,
 			@RequestParam(required = false) String domainId,

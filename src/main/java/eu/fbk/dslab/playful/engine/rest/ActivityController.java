@@ -21,11 +21,10 @@ import eu.fbk.dslab.playful.engine.model.Activity;
 import eu.fbk.dslab.playful.engine.model.LearningFragment;
 import eu.fbk.dslab.playful.engine.repository.ActivityRepository;
 import eu.fbk.dslab.playful.engine.repository.LearningFragmentRepository;
-import eu.fbk.dslab.playful.engine.security.SecurityHelper;
 import eu.fbk.dslab.playful.engine.security.UserRole.Role;
 
 @RestController
-public class ActivityController {
+public class ActivityController extends PlayfulController {
 	@Autowired
 	ActivityRepository activityRepository;
 	@Autowired
@@ -33,9 +32,6 @@ public class ActivityController {
 	
 	@Autowired
 	EntityManager entityManager;
-	
-	@Autowired
-	SecurityHelper securityHelper;
 	
 	@GetMapping("/api/activities")
 	public Page<Activity> getList(
