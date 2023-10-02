@@ -42,7 +42,7 @@ public class IntegrationService {
     		ed.setFirstname(educator.getFirstname());
     		ed.setLastname(educator.getLastname());
     		educatorRepository.save(ed);
-    		logger.info(String.format("importEducators[%s]:%s", domainId, ed.getId()));
+    		logger.debug(String.format("importEducators[%s]:%s", domainId, ed.getId()));
     	}
     }
     
@@ -59,7 +59,7 @@ public class IntegrationService {
     		l.setFirstname(learner.getFirstname());
     		l.setLastname(learner.getLastname());
     		learnerRepository.save(l); 
-    		logger.info(String.format("importLearners[%s]:%s", domainId, l.getId()));
+    		logger.debug(String.format("importLearners[%s]:%s", domainId, l.getId()));
     	}
     }
     
@@ -81,7 +81,7 @@ public class IntegrationService {
     			}    			    			
     		}
     		groupRepository.save(g);    
-    		logger.info(String.format("importGroups[%s]:%s", domainId, g.getId()));
+    		logger.debug(String.format("importGroups[%s]:%s", domainId, g.getId()));
     	}
     }
 
@@ -100,7 +100,7 @@ public class IntegrationService {
     		act.setExtUrl(activity.getExtUrl());
     		act.setType(activity.getType());
     		externalActivityRepository.save(act);   
-    		logger.info(String.format("importExtActivities[%s]:%s", domainId, act.getId()));
+    		logger.debug(String.format("importExtActivities[%s]:%s", domainId, act.getId()));
     	}
     }
     
