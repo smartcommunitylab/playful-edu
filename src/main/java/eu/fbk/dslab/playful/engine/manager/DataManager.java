@@ -213,7 +213,6 @@ public class DataManager {
 				learningScenarioRepository.save(ls);
 			}
 			runningScenarioService.runLearnerLearningScenario(learningScenarioId, learner.getId());		
-			
 		}
 	}
 }

@@ -88,7 +88,7 @@ public class ExtController {
 		}		
 	}
 	
-	@GetMapping("/api/ext/composedactivity/next")
+	@GetMapping("/api/ext/fragment/next")
 	public ResponseEntity<LearningFragmentRun> getNextActivity(
 			@RequestParam String domainId,
 			@RequestParam String learningScenarioId, 

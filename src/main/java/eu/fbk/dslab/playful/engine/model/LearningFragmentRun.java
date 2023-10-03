@@ -5,11 +5,17 @@ import java.util.List;
 
 import org.springframework.data.annotation.Transient;
 
+import eu.fbk.dslab.playful.engine.model.LearningFragment.SetCompletionRule;
 import eu.fbk.dslab.playful.engine.model.LearningFragment.Type;
 
 public class LearningFragmentRun {
 	private String learningFragmentId;
 	private Type type;
+	private SetCompletionRule setCompletionRule;
+	private int minActivities;
+	private boolean completed = false;
+	private boolean open = false;
+	
 	private List<String> activityStatusIds = new ArrayList<>();
 	
 	@Transient
@@ -39,5 +45,29 @@ public class LearningFragmentRun {
 	}
 	public void setActivities(List<ActivityStatus> activities) {
 		this.activities = activities;
+	}
+	public SetCompletionRule getSetCompletionRule() {
+		return setCompletionRule;
+	}
+	public void setSetCompletionRule(SetCompletionRule setCompletionRule) {
+		this.setCompletionRule = setCompletionRule;
+	}
+	public int getMinActivities() {
+		return minActivities;
+	}
+	public void setMinActivities(int minActivities) {
+		this.minActivities = minActivities;
+	}
+	public boolean isCompleted() {
+		return completed;
+	}
+	public void setCompleted(boolean completed) {
+		this.completed = completed;
+	}
+	public boolean isOpen() {
+		return open;
+	}
+	public void setOpen(boolean open) {
+		this.open = open;
 	}
 }

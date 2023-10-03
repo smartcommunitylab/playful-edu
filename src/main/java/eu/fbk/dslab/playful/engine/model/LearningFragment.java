@@ -10,6 +10,10 @@ public class LearningFragment {
 		singleton, set, list
 	};
 	
+	public static enum SetCompletionRule {
+		all, at_least
+	};
+	
 	@Id
 	private String id;
 	@Indexed
@@ -19,6 +23,8 @@ public class LearningFragment {
 	private String title;
 	private String desc;
 	private Type type;
+	private SetCompletionRule setCompletionRule;
+	private int minActivities;
 
 	public String getId() {
 		return id;
@@ -66,6 +72,22 @@ public class LearningFragment {
 
 	public void setLearningModuleId(String learningModuleId) {
 		this.learningModuleId = learningModuleId;
+	}
+
+	public SetCompletionRule getSetCompletionRule() {
+		return setCompletionRule;
+	}
+
+	public void setSetCompletionRule(SetCompletionRule setCompletionRule) {
+		this.setCompletionRule = setCompletionRule;
+	}
+
+	public int getMinActivities() {
+		return minActivities;
+	}
+
+	public void setMinActivities(int minActivities) {
+		this.minActivities = minActivities;
 	}
 
 

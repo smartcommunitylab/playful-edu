@@ -134,19 +134,33 @@ public class RunningScenarioService {
 			
 			List<LearningFragment> fragments = learningFragmentRepository.findByLearningModuleId(module.getId(), 
 					Sort.by(Direction.ASC, "position"));
-			for(LearningFragment fragment : fragments) {
+			for(int i=0; i < fragments.size(); i++) {
+				LearningFragment fragment = fragments.get(i);
 				LearningFragmentRun fragmentRun = new LearningFragmentRun();
 				fragmentRun.setLearningFragmentId(fragment.getId());
 				fragmentRun.setType(fragment.getType());
+				fragmentRun.setSetCompletionRule(fragment.getSetCompletionRule());
+				if(i == 0) {
+					fragmentRun.setOpen(true);
+				}
 				moduleRun.getFragments().add(fragmentRun);
 				
 				List<Activity> activities = activityRepository.findByLearningFragmentId(fragment.getId());
+				
+				if(LearningFragment.Type.set.equals(fragment.getType()) && 
+						LearningFragment.SetCompletionRule.at_least.equals(fragment.getSetCompletionRule())) {
+					fragmentRun.setMinActivities(fragment.getMinActivities());
+				} else {
+					fragmentRun.setMinActivities(activities.size());
+				}
+				
 				if(fragment.getType().equals(LearningFragment.Type.list)) {
 					Comparator<Activity> compareByPosition = 
 							(Activity o1, Activity o2) -> Integer.compare(o1.getPosition(), o2.getPosition());
 					Collections.sort(activities, compareByPosition);
 				}
-				for(Activity activity : activities) {
+				for(int j=0; j < activities.size(); j++) {
+					Activity activity = activities.get(j);
 					if(activity.getType().equals(Type.concrete)) {
 						ActivityStatus activityStatus = new ActivityStatus();
 						activityStatus.setDomainId(learningScenario.getDomainId());
@@ -158,6 +172,7 @@ public class RunningScenarioService {
 						activityStatus.setLearningScenarioRunId(scenarioRun.getId());
 						activityStatus.setLearnerId(learner.getId());
 						activityStatus.setLastUpdate(new Date());
+						activityStatus.setOpen(setInitActivityOpen(i, j, fragment.getType()));
 						activityStatusRepository.save(activityStatus);
 						fragmentRun.getActivityStatusIds().add(activityStatus.getId());
 					} else if(activity.getType().equals(Type.group)) { 
@@ -178,6 +193,7 @@ public class RunningScenarioService {
 									activityStatus.setLearningScenarioRunId(scenarioRun.getId());
 									activityStatus.setLearnerId(learner.getId());
 									activityStatus.setLastUpdate(new Date());
+									activityStatus.setOpen(setInitActivityOpen(i, j, fragment.getType()));
 									activityStatusRepository.save(activityStatus);
 									fragmentRun.getActivityStatusIds().add(activityStatus.getId());
 								}									
@@ -192,6 +208,19 @@ public class RunningScenarioService {
 		learningScenarioRunRepository.save(scenarioRun);
 	}
 	
+	private boolean setInitActivityOpen(int fragmentIndex, int activityIndex, LearningFragment.Type type) {
+		if(fragmentIndex == 0) {
+			if(LearningFragment.Type.list.equals(type)) {
+				if(activityIndex == 0) {
+					return true;
+				}
+			} else {
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	public LearningFragmentRun getNextActivity(String domainId, String learningScenarioId, String learnerId) throws HttpClientErrorException {
 		LearningScenarioRun scenarioRun = learningScenarioRunRepository.findByLearningScenarioIdAndLearnerId(learningScenarioId, learnerId);
 		if(scenarioRun != null) {
@@ -200,7 +229,7 @@ public class RunningScenarioService {
 					List<ActivityStatus> list = activityStatusRepository.findByIdIn(fragmentRun.getActivityStatusIds());
 					boolean found = false;
 					for(ActivityStatus activityStatus : list) {
-						if(activityStatus.getStatus().equals(Status.assigned)) {
+						if(activityStatus.getStatus().equals(Status.assigned) && activityStatus.isOpen()) {
 							found = true;
 							fragmentRun.getActivities().add(activityStatus);
 						}
@@ -228,6 +257,10 @@ public class RunningScenarioService {
 											|| Status.assigned.equals(activityStatus.getStatus()))) {
 								activityStatus.setStatus(status);
 								activityStatusRepository.save(activityStatus);
+								if(Status.completed.equals(status)) {
+									//check if fragment is completed
+									completeActivityinFragment(scenarioRun, fragment);
+								}
 								return;
 							}
 						}
@@ -237,5 +270,85 @@ public class RunningScenarioService {
 		}			
 		throw new HttpClientErrorException(HttpStatus.NOT_FOUND);
 	}
+	
+	private void completeActivityinFragment(LearningScenarioRun scenarioRun, LearningFragmentRun fragment) {
+		//number of completed activities
+		int completedActivities = 0;
+		for(String activityStatusId : fragment.getActivityStatusIds()) {
+			ActivityStatus activityStatus = activityStatusRepository.findById(activityStatusId).orElse(null);
+			if(activityStatus != null) {
+				if(Status.completed.equals(activityStatus.getStatus())) {
+					completedActivities++;
+				}
+			}
+		}
+		for(int moduleIndex=0;  moduleIndex < scenarioRun.getModules().size(); moduleIndex++) {
+			LearningModuleRun moduleRun = scenarioRun.getModules().get(moduleIndex);
+			for(int fragmentIndex=0; fragmentIndex <= moduleRun.getFragments().size(); fragmentIndex++) {
+				LearningFragmentRun fragmentRun = moduleRun.getFragments().get(fragmentIndex);
+				if(fragmentRun.getLearningFragmentId().equals(fragment.getLearningFragmentId())) {
+					if(completedActivities >= fragment.getMinActivities()) {
+						//set fragment as completed
+						fragmentRun.setCompleted(true);
+						//set next fragment to open
+						if(fragmentIndex < (moduleRun.getFragments().size() - 1)) {
+							LearningFragmentRun nextFragmentRun = moduleRun.getFragments().get(fragmentIndex + 1);
+							nextFragmentRun.setOpen(true);
+							//set fragment activities open
+							setFragmentActivitiesOpen(nextFragmentRun);
+						} else {
+							//set next module open
+							if(moduleIndex < (scenarioRun.getModules().size() - 1)) {
+								LearningModuleRun nextModuleRun = scenarioRun.getModules().get(moduleIndex + 1);
+								if(nextModuleRun.getFragments().size() > 0) {
+									LearningFragmentRun nextFragmentRun = nextModuleRun.getFragments().get(0);
+									nextFragmentRun.setOpen(true);
+									//set fragment activities open
+									setFragmentActivitiesOpen(nextFragmentRun);
+								}
+							}
+						}						
+						learningScenarioRunRepository.save(scenarioRun);
+					} else {
+						if(LearningFragment.Type.list.equals(fragmentRun.getType())) {
+							//set next activity open
+							setListNextActivityOpen(fragmentRun);
+						}
+					}
+				}
+			}
+		}		
+	}
+	
+	private void setFragmentActivitiesOpen(LearningFragmentRun fragment)  {
+		for(int i=0; i < fragment.getActivityStatusIds().size(); i++) {
+			String activityStatusId = fragment.getActivityStatusIds().get(i);
+			ActivityStatus activityStatus = activityStatusRepository.findById(activityStatusId).orElse(null);
+			if(activityStatus != null) {
+				if((LearningFragment.Type.list.equals(fragment.getType()) && (i == 0)) ||
+						LearningFragment.Type.set.equals(fragment.getType()) ||
+						LearningFragment.Type.singleton.equals(fragment.getType())) {
+					if(!activityStatus.isOpen()) {
+						activityStatus.setOpen(true);
+						activityStatusRepository.save(activityStatus);
+					}										
+				}				
+			}
+		}
+	}
+	
+	private void setListNextActivityOpen(LearningFragmentRun fragment) {
+		for(String activityStatusId : fragment.getActivityStatusIds()) {
+			ActivityStatus activityStatus = activityStatusRepository.findById(activityStatusId).orElse(null);
+			if(activityStatus != null) {
+				if(!activityStatus.isOpen()) {
+					activityStatus.setOpen(true);
+					activityStatusRepository.save(activityStatus);
+					return;
+				}
+			}
+		}
+	}
+	
 		
 }

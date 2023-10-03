@@ -26,6 +26,7 @@ public class ActivityStatus {
 	private String learnerId;
 	private Status status = Status.assigned;
 	private Date lastUpdate;
+	private boolean open = false;
 	
 	public String getId() {
 		return id;
@@ -92,6 +93,12 @@ public class ActivityStatus {
 	}
 	public void setLearnerId(String learnerId) {
 		this.learnerId = learnerId;
+	}
+	public boolean isOpen() {
+		return open;
+	}
+	public void setOpen(boolean open) {
+		this.open = open;
 	}
 
 }

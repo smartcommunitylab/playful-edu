@@ -16,6 +16,7 @@ public class LearningScenarioDto {
 	private List<Learner> learners = new ArrayList<>();
 	private List<Educator> educators = new ArrayList<>();
 	private List<LearningModuleDto> modules = new ArrayList<>();
+	private boolean running = false;
 	
 	public LearningScenarioDto() {}
 	
@@ -25,6 +26,7 @@ public class LearningScenarioDto {
 		this.title = scenario.getTitle();
 		this.desc = scenario.getDesc();
 		this.language = scenario.getLanguage();
+		this.running = scenario.isRunning();
 	}
 
 	public String getTitle() {
@@ -89,6 +91,14 @@ public class LearningScenarioDto {
 
 	public void setId(String id) {
 		this.id = id;
+	}
+
+	public boolean isRunning() {
+		return running;
+	}
+
+	public void setRunning(boolean running) {
+		this.running = running;
 	}
 
 
