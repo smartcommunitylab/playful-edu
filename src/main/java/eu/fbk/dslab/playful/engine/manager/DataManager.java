@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 
@@ -198,6 +199,9 @@ public class DataManager {
 			String nickname, String email) throws HttpClientErrorException {
 		LearningScenario ls = learningScenarioRepository.findById(learningScenarioId).orElse(null);
 		if(ls != null) {
+			if(!ls.isPublicScenario()) {
+				throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "scenario not plublic");
+			}
 			Learner learner = learnerRepository.findOneByDomainIdAndNickname(domainId, nickname);
 			if(learner == null) {
 				learner = new Learner();
