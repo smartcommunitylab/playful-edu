@@ -119,6 +119,7 @@ public class RunningScenarioService {
 	}
 	
 	private void runLearningScenario(LearningScenario learningScenario, Learner learner) throws HttpClientErrorException {
+		logger.warn(String.format("runLearningScenario[%s]:%s - %s", learningScenario.getDomainId(), learningScenario.getId(), learner.getEmail()));
 		LearningScenarioRun scenarioRun = new LearningScenarioRun();
 		scenarioRun.setDomainId(learningScenario.getDomainId());
 		scenarioRun.setLearningScenarioId(learningScenario.getId());
@@ -284,7 +285,7 @@ public class RunningScenarioService {
 		}
 		for(int moduleIndex=0;  moduleIndex < scenarioRun.getModules().size(); moduleIndex++) {
 			LearningModuleRun moduleRun = scenarioRun.getModules().get(moduleIndex);
-			for(int fragmentIndex=0; fragmentIndex <= moduleRun.getFragments().size(); fragmentIndex++) {
+			for(int fragmentIndex=0; fragmentIndex < moduleRun.getFragments().size(); fragmentIndex++) {
 				LearningFragmentRun fragmentRun = moduleRun.getFragments().get(fragmentIndex);
 				if(fragmentRun.getLearningFragmentId().equals(fragment.getLearningFragmentId())) {
 					if(completedActivities >= fragment.getMinActivities()) {
