@@ -257,6 +257,7 @@ public class RunningScenarioService {
 									(Status.in_progress.equals(activityStatus.getStatus()) 
 											|| Status.assigned.equals(activityStatus.getStatus()))) {
 								activityStatus.setStatus(status);
+								activityStatus.setLastUpdate(new Date());
 								activityStatusRepository.save(activityStatus);
 								if(Status.completed.equals(status)) {
 									//check if fragment is completed
