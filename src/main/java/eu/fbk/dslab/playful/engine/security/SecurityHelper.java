@@ -96,7 +96,8 @@ public class SecurityHelper {
 		try {
 			list = roleCache.get(username);
 			for(UserRole r : list) {
-				if(r.getRole().equals(role) && r.getEntityId().equals(entityId)) {
+				if((r.getRole().equals(role) && r.getEntityId().equals(entityId)) ||
+						r.getRole().equals(Role.admin)) {
 					return true;
 				}
 			}

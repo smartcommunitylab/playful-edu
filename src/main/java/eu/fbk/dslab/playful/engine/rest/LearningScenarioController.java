@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,11 +16,13 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.HttpClientErrorException;
 
 import eu.fbk.dslab.playful.engine.exception.EntityException;
 import eu.fbk.dslab.playful.engine.exception.UnauthorizedException;
 import eu.fbk.dslab.playful.engine.manager.DataManager;
 import eu.fbk.dslab.playful.engine.manager.EntityManager;
+import eu.fbk.dslab.playful.engine.manager.RunningScenarioService;
 import eu.fbk.dslab.playful.engine.model.LearningScenario;
 import eu.fbk.dslab.playful.engine.repository.LearningScenarioRepository;
 import eu.fbk.dslab.playful.engine.security.UserRole.Role;
@@ -34,6 +37,9 @@ public class LearningScenarioController extends PlayfulController {
 	
 	@Autowired
 	EntityManager entityManager;
+	
+	@Autowired
+	RunningScenarioService runningScenarioService;
 	
 	@GetMapping("/api/scenarios")
 	public Page<LearningScenario> getList(
@@ -88,6 +94,21 @@ public class LearningScenarioController extends PlayfulController {
 			learningScenarioRepository.deleteById(id);
 		}
 		return learningScenario;
+	}
+	
+	@PutMapping("/api/scenarios/{id}/run")
+	public ResponseEntity<Void> runLearningScenario(@PathVariable String id) throws Exception {
+		try {
+			LearningScenario ls = learningScenarioRepository.findById(id).orElse(null);
+			if(ls == null) {
+				throw new EntityException("entity not found");
+			}
+			securityHelper.checkRole(ls.getDomainId(), Role.domain);
+			runningScenarioService.runLearningScenario(id);
+			return ResponseEntity.ok(null);
+		} catch (HttpClientErrorException e) {
+			return new ResponseEntity<>(null, e.getStatusCode());
+		}
 	}
 
 }
