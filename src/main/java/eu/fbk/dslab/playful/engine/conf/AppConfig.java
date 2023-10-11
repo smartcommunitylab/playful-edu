@@ -8,9 +8,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.ExternalDocumentation;
@@ -26,16 +23,10 @@ import io.swagger.v3.oas.models.servers.Server;
  * resources publishing and restController functionalities
  */
 @Configuration
-@EnableWebMvc
-public class AppConfig implements WebMvcConfigurer {
+public class AppConfig {
 
     @Value("${server_url:/}")
     private String serverUrl;
-
-	@Override
-	public void addCorsMappings(CorsRegistry registry) {
-		registry.addMapping("/**").allowedMethods("*");
-	}
 
     @Bean
     public RestTemplate restTemplate() {

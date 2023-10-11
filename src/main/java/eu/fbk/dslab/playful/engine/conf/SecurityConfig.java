@@ -1,6 +1,7 @@
 package eu.fbk.dslab.playful.engine.conf;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 
 import org.apache.commons.lang3.StringUtils;
@@ -31,6 +32,9 @@ import org.springframework.security.web.authentication.preauth.RequestHeaderAuth
 import org.springframework.security.web.header.HeaderWriterFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.util.Assert;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 public class SecurityConfig {
@@ -50,6 +54,7 @@ public class SecurityConfig {
         	.authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
         	.addFilterAfter(xauthRequestHeaderAuthenticationFilter(), HeaderWriterFilter.class)
         	.sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+	    	.cors(cors -> cors.configurationSource(corsConfigurationSource()))
         	.csrf(csfr -> csfr.disable());
         return http.build();
     }
@@ -101,6 +106,7 @@ public class SecurityConfig {
 	    	// we don't want a session for a REST backend
 	    	// each request should be evaluated
 	    	.sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+	    	.cors(cors -> cors.configurationSource(corsConfigurationSource()))
 	    	.csrf(csfr -> csfr.disable());
         return http.build();
     }
@@ -147,7 +153,18 @@ public class SecurityConfig {
 	public SecurityFilterChain filterChainApp3(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(auth -> {
         	auth.anyRequest().permitAll();	
-        });		
+        })
+        .cors(cors -> cors.configurationSource(corsConfigurationSource()));
         return http.build();
-    }	
+    }
+    
+    CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(Arrays.asList("*"));
+        configuration.setAllowedMethods(Arrays.asList("GET","POST","PUT","DELETE")); 
+        configuration.setAllowedHeaders(Arrays.asList("*"));
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }    
 }
