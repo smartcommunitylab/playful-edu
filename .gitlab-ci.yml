@@ -84,7 +84,7 @@ deploy_backend_prod:
   stage: deploy
   image: smartcommunitylab/kubectl-alpine:latest
   environment:
-    name: platform-new
+    name: dslab
   script:
     - echo "deploy"
     - kubectl -n playful-edu-prod set image deployments/playful-edu-backend playful-edu-backend=$CONTAINER_BACKEND_IMAGE
@@ -96,7 +96,7 @@ deploy_backend_dev:
   stage: deploy
   image: smartcommunitylab/kubectl-alpine:latest
   environment:
-    name: platform-new
+    name: dslab
   script:
     - echo "deploy"
     - kubectl -n playful-edu-dev set image deployments/playful-edu-backend playful-edu-backend=$CONTAINER_BACKEND_IMAGE
