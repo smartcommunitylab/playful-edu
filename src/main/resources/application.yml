@@ -9,6 +9,7 @@ spring:
   data:
     mongodb:
       uri: ${SPRING_DATA_MONGODB_URL:}
+      database: ${SPRING_DATA_MONGODB_DB:}
       auto-index-creation: true
   main:
     allow-bean-definition-overriding: true      

@@ -1,0 +1,8 @@
+FROM maven:3.9.3-eclipse-temurin-20 AS build
+COPY ./src /tmp/src
+COPY ./pom.xml /tmp/pom.xml
+WORKDIR /tmp
+RUN mvn package -DskipTests
+
+FROM scratch
+COPY --from=build /root/.m2 /root/.m2
