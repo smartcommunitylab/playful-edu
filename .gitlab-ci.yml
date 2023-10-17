@@ -20,7 +20,8 @@ variables:
   CONTAINER_BACKEND_IMAGE: smartcommunitylab/playful-edu-backend:$CI_COMMIT_REF_NAME-$CI_COMMIT_SHORT_SHA
   CONTAINER_BACKEND_IMAGE_LATEST: smartcommunitylab/playful-edu-backend:$CI_COMMIT_REF_NAME-latest
   CONTAINER_CACHE_IMAGE: smartcommunitylab/playfuledu-backend:cache
-
+  CS_IMAGE: smartcommunitylab/playful-edu-backend:$CI_COMMIT_REF_NAME-latest
+  
 update-backend-cache-image:
   stage: build
   variables:
