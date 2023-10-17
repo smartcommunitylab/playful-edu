@@ -87,8 +87,8 @@ deploy_backend_prod:
     name: platform-new
   script:
     - echo "deploy"
-    - kubectl -n playfuledu set image deployments/playful-edu-backend-prod playful-edu-backend-prod=$CONTAINER_BACKEND_IMAGE --record=true
-    - kubectl -n playfuledu rollout status deployment playful-edu-backend-prod
+    - kubectl -n playful-edu-prod set image deployments/playful-edu-backend playful-edu-backend=$CONTAINER_BACKEND_IMAGE
+    - kubectl -n playful-edu-prod rollout status deployment playful-edu-backend
   only:
     - prod
 
@@ -99,7 +99,7 @@ deploy_backend_dev:
     name: platform-new
   script:
     - echo "deploy"
-    - kubectl -n playfuledu set image deployments/playful-edu-backend-dev playful-edu-backend-dev=$CONTAINER_BACKEND_IMAGE --record=true
-    - kubectl -n playfuledu rollout status deployment playful-edu-backend-dev
+    - kubectl -n playful-edu-dev set image deployments/playful-edu-backend playful-edu-backend=$CONTAINER_BACKEND_IMAGE
+    - kubectl -n playful-edu-dev rollout status deployment playful-edu-backend
   only:
     - dev
