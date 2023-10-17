@@ -19,7 +19,7 @@ variables:
   SAST_JAVA_VERSION: 20
   CONTAINER_BACKEND_IMAGE: smartcommunitylab/playful-edu-backend:$CI_COMMIT_REF_NAME-$CI_COMMIT_SHORT_SHA
   CONTAINER_BACKEND_IMAGE_LATEST: smartcommunitylab/playful-edu-backend:$CI_COMMIT_REF_NAME-latest
-  CONTAINER_CACHE_IMAGE: smartcommunitylab/playful-edu-backend:cache
+  CONTAINER_CACHE_IMAGE: smartcommunitylab/playfuledu-backend:cache
 
 update-backend-cache-image:
   stage: build
