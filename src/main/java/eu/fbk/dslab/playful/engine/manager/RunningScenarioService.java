@@ -119,7 +119,15 @@ public class RunningScenarioService {
 	}
 	
 	private void runLearningScenario(LearningScenario learningScenario, Learner learner) throws HttpClientErrorException {
-		logger.warn(String.format("runLearningScenario[%s]:%s - %s", learningScenario.getDomainId(), learningScenario.getId(), learner.getEmail()));
+		logger.info(String.format("runLearningScenario[%s]:%s - %s", learningScenario.getDomainId(), learningScenario.getId(), learner.getEmail()));
+		//check existing scenario
+		LearningScenarioRun oldScenario = learningScenarioRunRepository.findByLearningScenarioIdAndLearnerId(learningScenario.getId(), learner.getId());
+		if(oldScenario != null) {
+			logger.info(String.format("runLearningScenario[%s] already exists:%s - %s", learningScenario.getDomainId(), 
+					learningScenario.getId(), learner.getEmail()));
+			return;
+		}
+		
 		LearningScenarioRun scenarioRun = new LearningScenarioRun();
 		scenarioRun.setDomainId(learningScenario.getDomainId());
 		scenarioRun.setLearningScenarioId(learningScenario.getId());
