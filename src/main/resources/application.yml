@@ -1,7 +1,7 @@
 server:
   port: 8445
   servlet:
-    contextPath: /playfuledu
+    contextPath: ${CONTEXT_PATH:}
 
 spring:
   application:

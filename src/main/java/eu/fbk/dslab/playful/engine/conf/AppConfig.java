@@ -25,9 +25,6 @@ import io.swagger.v3.oas.models.servers.Server;
 @Configuration
 public class AppConfig {
 
-    @Value("${server_url:/}")
-    private String serverUrl;
-
     @Bean
     public RestTemplate restTemplate() {
         SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
@@ -48,7 +45,6 @@ public class AppConfig {
     public OpenAPI springOpenAPI() {
         final String securitySchemeName = "bearerAuth";
         return new OpenAPI()
-                .servers(List.of(new Server().url(serverUrl)))
                 .addSecurityItem(new SecurityRequirement().addList(securitySchemeName))
                 .components(
                     new Components()
