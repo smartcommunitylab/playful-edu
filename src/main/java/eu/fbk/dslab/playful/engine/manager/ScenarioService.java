@@ -120,7 +120,7 @@ public class ScenarioService {
 						Sort.by(Direction.ASC, "position"));
 				for(LearningFragment fragment : fragments) {
 					LearningFragmentDto fragmentDto = new LearningFragmentDto(fragment);
-					moduleDto.setFragment(fragmentDto);
+					moduleDto.getFragments().add(fragmentDto);
 					
 					List<Activity> activities = activityRepository.findByLearningFragmentId(fragment.getId());
 					if(fragment.getType().equals(LearningFragment.Type.list)) {

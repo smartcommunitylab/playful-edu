@@ -1,6 +1,8 @@
 package eu.fbk.dslab.playful.engine.dto;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import eu.fbk.dslab.playful.engine.model.LearningModule;
 import eu.fbk.dslab.playful.engine.model.LearningModule.Level;
@@ -12,7 +14,7 @@ public class LearningModuleDto {
 	private Level level;
 	private Date dateFrom;
 	private Date dateTo;
-	private LearningFragmentDto fragment;
+	private List<LearningFragmentDto> fragments = new ArrayList<>();
 	
 	public LearningModuleDto() {}
 	
@@ -65,20 +67,20 @@ public class LearningModuleDto {
 		this.dateTo = dateTo;
 	}
 
-	public LearningFragmentDto getFragment() {
-		return fragment;
-	}
-
-	public void setFragment(LearningFragmentDto fragment) {
-		this.fragment = fragment;
-	}
-
 	public String getId() {
 		return id;
 	}
 
 	public void setId(String id) {
 		this.id = id;
+	}
+
+	public List<LearningFragmentDto> getFragments() {
+		return fragments;
+	}
+
+	public void setFragments(List<LearningFragmentDto> fragments) {
+		this.fragments = fragments;
 	}
 
 
