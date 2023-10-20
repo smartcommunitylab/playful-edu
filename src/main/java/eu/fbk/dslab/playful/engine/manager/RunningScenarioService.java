@@ -253,7 +253,7 @@ public class RunningScenarioService {
 	}
 	
 	public void changeActivityStatus(String domainId, String learningScenarioId, String learnerId, 
-			String activityId, Status status) throws HttpClientErrorException {
+			String externalActivityId, Status status) throws HttpClientErrorException {
 		LearningScenarioRun scenarioRun = learningScenarioRunRepository.findByLearningScenarioIdAndLearnerId(learningScenarioId, learnerId);
 		if(scenarioRun != null) {
 			for(LearningModuleRun module : scenarioRun.getModules()) {
@@ -261,7 +261,7 @@ public class RunningScenarioService {
 					for(String activityStatusId : fragment.getActivityStatusIds()) {
 						ActivityStatus activityStatus = activityStatusRepository.findById(activityStatusId).orElse(null);
 						if(activityStatus != null) {
-							if(activityStatus.getActivityId().equals(activityId) && 
+							if(activityStatus.getExternalActivityId().equals(externalActivityId) && 
 									(Status.in_progress.equals(activityStatus.getStatus()) 
 											|| Status.assigned.equals(activityStatus.getStatus()))) {
 								activityStatus.setStatus(status);

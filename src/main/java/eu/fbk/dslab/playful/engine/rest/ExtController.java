@@ -65,10 +65,10 @@ public class ExtController {
 			@RequestParam String domainId,
 			@RequestParam String learningScenarioId,
 			@RequestParam String learnerId,
-			@RequestParam String activityId,
+			@RequestParam String externalActivityId,
 			@RequestParam Status status) {
 		try {
-			runningScenarioService.changeActivityStatus(domainId, learningScenarioId, learnerId, activityId, status);
+			runningScenarioService.changeActivityStatus(domainId, learningScenarioId, learnerId, externalActivityId, status);
 			return ResponseEntity.ok(null);
 		} catch (HttpClientErrorException e) {
 			return new ResponseEntity<>(null, e.getStatusCode());
