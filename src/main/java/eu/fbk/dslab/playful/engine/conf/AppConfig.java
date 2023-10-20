@@ -1,5 +1,7 @@
 package eu.fbk.dslab.playful.engine.conf;
 
+import org.springdoc.core.customizers.OpenApiCustomizer;
+import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
@@ -36,22 +38,54 @@ public class AppConfig {
         threadPoolTaskScheduler.setThreadNamePrefix("ThreadPoolTaskScheduler");
         return threadPoolTaskScheduler;
     }
+
+    @Bean
+    public GroupedOpenApi extOpenApi() {
+       String paths[] = {"/api/ext/**"};
+       return GroupedOpenApi.builder().group("external")
+    		   .pathsToMatch(paths)
+    		   .packagesToScan("eu.fbk.dslab.playful.engine.rest")    		   
+    		   .addOpenApiCustomizer(extApiCustomizer()).build();
+    }
+    
+    @Bean
+    public GroupedOpenApi jwtOpenApi() {
+       String paths[] = {"/api/**"};
+       return GroupedOpenApi.builder().group("jwt")
+    		   .pathsToMatch(paths)
+    		   .pathsToExclude("/api/ext/**")
+    		   .packagesToScan("eu.fbk.dslab.playful.engine.rest")
+    		   .addOpenApiCustomizer(jwtApiCustomizer()).build();
+    }
+    
+    public OpenApiCustomizer extApiCustomizer() {
+		return openApi -> {
+			final String securitySchemeName = "apiKey";
+			openApi.addSecurityItem(new SecurityRequirement().addList(securitySchemeName));
+			openApi.getComponents().addSecuritySchemes(securitySchemeName,
+					new SecurityScheme()
+							.type(SecurityScheme.Type.APIKEY)
+							.in(SecurityScheme.In.HEADER)
+							.name("x-auth"));
+		};
+    }
+    
+    public OpenApiCustomizer jwtApiCustomizer() {
+    	return openApi -> {
+			final String securitySchemeName = "bearerAuth";
+			openApi.addSecurityItem(new SecurityRequirement().addList(securitySchemeName));
+			openApi.getComponents().addSecuritySchemes(securitySchemeName,
+                    new SecurityScheme()
+                    		.name(securitySchemeName)
+                    		.type(SecurityScheme.Type.HTTP)
+                    		.scheme("bearer")
+                    		.bearerFormat("JWT"));
+    	};
+    }
     
 	@Bean
     public OpenAPI springOpenAPI() {
-        final String securitySchemeName = "bearerAuth";
         return new OpenAPI()
-                .addSecurityItem(new SecurityRequirement().addList(securitySchemeName))
-                .components(
-                    new Components()
-                        .addSecuritySchemes(securitySchemeName,
-                            new SecurityScheme()
-                                .name(securitySchemeName)
-                                .type(SecurityScheme.Type.HTTP)
-                                .scheme("bearer")
-                                .bearerFormat("JWT")
-                        )
-                )                
                 .info(new Info().title("Playful Education Project")
                 .version("1.0.0")
                 .license(new License().name("Apache 2.0")))

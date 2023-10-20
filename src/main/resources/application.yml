@@ -31,8 +31,8 @@ spring:
 springdoc:
   api-docs:
     path: /api-docs
-  packagesToScan: eu.fbk.dslab.playful.engine.rest
-  pathsToMatch: /api/**
+  #packagesToScan: eu.fbk.dslab.playful.engine.rest
+  #pathsToMatch: /api/**
   swagger-ui:
     path: /swagger-ui.html
     enabled: true 
