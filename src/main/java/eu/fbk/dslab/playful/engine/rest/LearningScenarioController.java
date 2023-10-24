@@ -91,6 +91,9 @@ public class LearningScenarioController extends PlayfulController {
 		LearningScenario learningScenario = learningScenarioRepository.findById(id).orElse(null);
 		if(learningScenario != null) {
 			securityHelper.checkRole(learningScenario.getDomainId(), Role.domain);
+			if(learningScenario.isRunning()) {
+				throw new EntityException("scenario is running");
+			}
 			learningScenarioRepository.deleteById(id);
 		}
 		return learningScenario;

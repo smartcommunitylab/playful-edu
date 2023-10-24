@@ -22,6 +22,8 @@ import eu.fbk.dslab.playful.engine.model.Concept;
 import eu.fbk.dslab.playful.engine.model.Educator;
 import eu.fbk.dslab.playful.engine.model.ExternalActivity;
 import eu.fbk.dslab.playful.engine.model.Learner;
+import eu.fbk.dslab.playful.engine.model.LearningFragment;
+import eu.fbk.dslab.playful.engine.model.LearningModule;
 import eu.fbk.dslab.playful.engine.model.LearningScenario;
 import eu.fbk.dslab.playful.engine.model.LearningScenarioRun;
 import eu.fbk.dslab.playful.engine.repository.ActivityRepository;
@@ -31,6 +33,8 @@ import eu.fbk.dslab.playful.engine.repository.ConceptRepository;
 import eu.fbk.dslab.playful.engine.repository.EducatorRepository;
 import eu.fbk.dslab.playful.engine.repository.ExternalActivityRepository;
 import eu.fbk.dslab.playful.engine.repository.LearnerRepository;
+import eu.fbk.dslab.playful.engine.repository.LearningFragmentRepository;
+import eu.fbk.dslab.playful.engine.repository.LearningModuleRepository;
 import eu.fbk.dslab.playful.engine.repository.LearningScenarioRepository;
 import eu.fbk.dslab.playful.engine.repository.LearningScenarioRunRepository;
 
@@ -59,6 +63,10 @@ public class DataManager {
 	ActivityStatusRepository activityStatusRepository;
 	@Autowired
 	CompetenceRepository competenceRepository;	
+	@Autowired
+	LearningModuleRepository learningModuleRepository;
+	@Autowired
+	LearningFragmentRepository learningFragmentRepository;
 	
 	@Autowired
 	RunningScenarioService runningScenarioService;
@@ -189,10 +197,81 @@ public class DataManager {
 				toRemove.forEach(learnerId -> {
 					removeLearningScenarioRun(learningScenario.getId(), learnerId);
 				});
+			} else {
+				learningScenario.setRunning(false);
+				learningScenarioRepository.save(learningScenario);
 			}
-			learningScenarioRepository.save(learningScenario);
 		}
 		return learningScenario;
+	}
+	
+	public LearningModule updateLearningModule(LearningModule module) throws HttpClientErrorException {
+		if(isLearningModuleRunning(module.getId()))
+			throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "scenario is running");
+		learningModuleRepository.save(module);
+		return module;
+	}
+	
+	public LearningModule removeLearningModule(LearningModule module) throws HttpClientErrorException {
+		if(isLearningModuleRunning(module.getId()))
+			throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "scenario is running");
+		learningModuleRepository.deleteById(module.getId());
+		return module;
+	}
+	
+	public LearningFragment updateLearningFragment(LearningFragment fragment) throws HttpClientErrorException {
+		if(isLearningFragmentRunning(fragment.getId()))
+			throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "scenario is running");
+		learningFragmentRepository.save(fragment);
+		return fragment;
+	}
+	
+	public LearningFragment removeLearningFragment(LearningFragment fragment) throws HttpClientErrorException {
+		if(isLearningFragmentRunning(fragment.getId()))
+			throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "scenario is running");
+		learningFragmentRepository.deleteById(fragment.getId());
+		return fragment;
+	}
+	
+	public Activity updateActivity(Activity activity) throws HttpClientErrorException {
+		if(isActivityRunning(activity.getId()))
+			throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "scenario is running");
+		activityRepository.save(activity);
+		return activity;
+	}
+	
+	public Activity removeActivity(Activity activity) throws HttpClientErrorException {
+		if(isActivityRunning(activity.getId()))
+			throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "scenario is running");
+		activityRepository.deleteById(activity.getId());
+		return activity;
+	}
+	
+	private boolean isLearningModuleRunning(String moduleId) {
+		LearningModule db = learningModuleRepository.findById(moduleId).orElse(null);
+		if(db != null) {
+			LearningScenario ls = learningScenarioRepository.findById(db.getLearningScenarioId()).orElse(null);
+			if(ls != null) {
+				return ls.isRunning();
+			}
+		}
+		return false;
+	}
+	
+	private boolean isLearningFragmentRunning(String fragmentId) {
+		LearningFragment db = learningFragmentRepository.findById(fragmentId).orElse(null);
+		if(db != null) {
+			return isLearningModuleRunning(db.getLearningModuleId());
+		}
+		return false;
+	}
+	
+	private boolean isActivityRunning(String activityId) {
+		Activity db = activityRepository.findById(activityId).orElse(null);
+		if(db != null) {
+			return isLearningFragmentRunning(db.getLearningFragmentId());
+		}
+		return false;
 	}
 	
 	public void registerUser(String domainId, String learningScenarioId, 
@@ -200,7 +279,7 @@ public class DataManager {
 		LearningScenario ls = learningScenarioRepository.findById(learningScenarioId).orElse(null);
 		if(ls != null) {
 			if(!ls.isPublicScenario()) {
-				throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "scenario not plublic");
+				throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "scenario not public");
 			}
 			Learner learner = learnerRepository.findOneByDomainIdAndNickname(domainId, nickname);
 			if(learner == null) {

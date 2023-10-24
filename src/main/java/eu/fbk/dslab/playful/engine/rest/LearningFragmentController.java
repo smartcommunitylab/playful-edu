@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import eu.fbk.dslab.playful.engine.exception.UnauthorizedException;
+import eu.fbk.dslab.playful.engine.manager.DataManager;
 import eu.fbk.dslab.playful.engine.manager.EntityManager;
 import eu.fbk.dslab.playful.engine.model.LearningFragment;
 import eu.fbk.dslab.playful.engine.model.LearningModule;
@@ -31,6 +32,9 @@ public class LearningFragmentController extends PlayfulController {
 	LearningModuleRepository learningModuleRepository;
 	@Autowired
 	LearningFragmentRepository learningFragmentRepository;
+	
+	@Autowired
+	DataManager dataManager;
 	
 	@Autowired
 	EntityManager entityManager;
@@ -81,7 +85,7 @@ public class LearningFragmentController extends PlayfulController {
 		learningFragment.setId(id);
 		if(securityHelper.hasRole(learningFragment.getDomainId(), Role.domain) || 
 				entityManager.checkEducatorModule(learningFragment.getLearningModuleId())) {
-			return learningFragmentRepository.save(learningFragment);
+			return dataManager.updateLearningFragment(learningFragment);
 		}		
 		throw new UnauthorizedException("role not found");
 	}
@@ -94,7 +98,7 @@ public class LearningFragmentController extends PlayfulController {
 			if(lm != null) {
 				if(securityHelper.hasRole(lm.getDomainId(), Role.domain) || 
 						entityManager.checkEducator(lm.getLearningScenarioId())) {
-					learningFragmentRepository.deleteById(id);
+					dataManager.removeLearningFragment(learningFragment);
 				}			
 			}
 		}
