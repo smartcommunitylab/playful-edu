@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -110,9 +111,10 @@ public class ExtController {
 	@GetMapping("/api/ext/learningscenario/educator")
 	public ResponseEntity<List<LearningScenarioDto>> getEducatorLearningScenario(
 			@RequestParam String domainId,
-			@RequestParam String educatorId) {
+			@RequestParam String educatorId,
+			@RequestParam(required = false) String language) {
 		try {
-			return ResponseEntity.ok(scenarioService.getEducatorScenario(educatorId, domainId));
+			return ResponseEntity.ok(scenarioService.getEducatorScenario(educatorId, domainId, language));
 		} catch (HttpClientErrorException e) {
 			return new ResponseEntity<>(null, e.getStatusCode());
 		}		
@@ -121,19 +123,30 @@ public class ExtController {
 	@GetMapping("/api/ext/learningscenario/learner")
 	public ResponseEntity<List<LearningScenarioDto>> getLearnerLearningScenario(
 			@RequestParam String domainId,
-			@RequestParam String learnerId) {
+			@RequestParam String learnerId,
+			@RequestParam(required = false) String language) {
 		try {
-			return ResponseEntity.ok(scenarioService.getLearnerScenario(learnerId, domainId));
+			return ResponseEntity.ok(scenarioService.getLearnerScenario(learnerId, domainId, language));
 		} catch (HttpClientErrorException e) {
 			return new ResponseEntity<>(null, e.getStatusCode());
 		}		
 	}
 	
+	@GetMapping("/api/ext/learningscenario/{id}")
+	public ResponseEntity<LearningScenarioDto> getLearningScenario(@PathVariable String id) {
+		try {
+			return ResponseEntity.ok(scenarioService.getLearningScenario(id));
+		} catch (HttpClientErrorException e) {
+			return new ResponseEntity<>(null, e.getStatusCode());
+		}						
+	}
+	
 	@GetMapping("/api/ext/learningscenario/public")
 	public ResponseEntity<List<LearningScenarioDto>> getPublicLearningScenario(
-			@RequestParam String domainId) {
+			@RequestParam String domainId,
+			@RequestParam(required = false) String language) {
 		try {
-			return ResponseEntity.ok(scenarioService.getPublicLearningScenario(domainId));
+			return ResponseEntity.ok(scenarioService.getPublicLearningScenario(domainId, language));
 		} catch (HttpClientErrorException e) {
 			return new ResponseEntity<>(null, e.getStatusCode());
 		}				

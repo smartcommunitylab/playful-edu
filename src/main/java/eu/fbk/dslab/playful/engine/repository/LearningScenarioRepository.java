@@ -14,6 +14,9 @@ public interface LearningScenarioRepository extends MongoRepository<LearningScen
 	public List<LearningScenario> findByIdIn(List<String> ids);
 	public Page<LearningScenario> findByDomainId(String domainId, Pageable pageRequest);
 	public List<LearningScenario> findByDomainIdAndEducators(String domainId, String educatorId);
+	public List<LearningScenario> findByDomainIdAndEducatorsAndLanguage(String domainId, String educatorId, String language);
 	public List<LearningScenario> findByDomainIdAndLearners(String domainId, String learnerId);
+	public List<LearningScenario> findByDomainIdAndLearnersAndLanguage(String domainId, String learnerId, String language);
 	public List<LearningScenario> findByDomainIdAndPublicScenario(String domainId, boolean publicScenario);
+	public List<LearningScenario> findByDomainIdAndPublicScenarioAndLanguage(String domainId, boolean publicScenario, String language);
 }

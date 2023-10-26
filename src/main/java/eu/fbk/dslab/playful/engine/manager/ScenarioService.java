@@ -78,28 +78,44 @@ public class ScenarioService {
 		return educator;
 	}
 
-	public List<LearningScenarioDto> getEducatorScenario(String educatorId, String domainId) throws HttpClientErrorException {
+	public List<LearningScenarioDto> getEducatorScenario(String educatorId, String domainId, String language) throws HttpClientErrorException {
 		List<LearningScenarioDto> result = new ArrayList<>();
-		List<LearningScenario> scenarios = learningScenarioRepository.findByDomainIdAndEducators(domainId, educatorId);
+		List<LearningScenario> scenarios = null;
+		if(StringUtils.isNotBlank(language)) {
+			scenarios = learningScenarioRepository.findByDomainIdAndEducatorsAndLanguage(domainId, educatorId, language);
+		} else {
+			scenarios = learningScenarioRepository.findByDomainIdAndEducators(domainId, educatorId);
+		}
 		scenarios.forEach(s -> result.add(getLearningScenario(s.getId())));
 		return result;
 	}
 	
-	public List<LearningScenarioDto> getLearnerScenario(String learnerId, String domainId) throws HttpClientErrorException {
+	public List<LearningScenarioDto> getLearnerScenario(String learnerId, String domainId, String language) throws HttpClientErrorException {
 		List<LearningScenarioDto> result = new ArrayList<>();
-		List<LearningScenario> scenarios = learningScenarioRepository.findByDomainIdAndLearners(domainId, learnerId);
+		List<LearningScenario> scenarios = null; 
+		if(StringUtils.isNotBlank(language)) {
+			scenarios = learningScenarioRepository.findByDomainIdAndLearnersAndLanguage(domainId, learnerId, language);
+		} else {
+			scenarios = learningScenarioRepository.findByDomainIdAndLearners(domainId, learnerId);
+		}
+		 
 		scenarios.forEach(s -> result.add(getLearningScenario(s.getId())));
 		return result;
 	}
 	
-	public List<LearningScenarioDto> getPublicLearningScenario(String domainId) throws HttpClientErrorException {
+	public List<LearningScenarioDto> getPublicLearningScenario(String domainId, String language) throws HttpClientErrorException {
 		List<LearningScenarioDto> result = new ArrayList<>();
-		List<LearningScenario> scenarios = learningScenarioRepository.findByDomainIdAndPublicScenario(domainId, true);
+		List<LearningScenario> scenarios = null;
+		if(StringUtils.isNotBlank(language)) {
+			scenarios = learningScenarioRepository.findByDomainIdAndPublicScenarioAndLanguage(domainId, true, language);
+		} else {
+			scenarios = learningScenarioRepository.findByDomainIdAndPublicScenario(domainId, true);
+		}
 		scenarios.forEach(s -> result.add(getLearningScenario(s.getId())));
 		return result;
 	}
 	
-	private LearningScenarioDto getLearningScenario(String learningScenarioId) throws HttpClientErrorException {
+	public LearningScenarioDto getLearningScenario(String learningScenarioId) throws HttpClientErrorException {
 		LearningScenario learningScenario = learningScenarioRepository.findById(learningScenarioId).orElse(null);
 		if(learningScenario != null) {
 			LearningScenarioDto scenarioDto = new LearningScenarioDto(learningScenario);
