@@ -251,6 +251,22 @@ public class DataManager {
 		return activity;
 	}
 	
+	public Activity createActivity(Activity activity) throws HttpClientErrorException {
+		if(isActivityRunning(activity.getId()))
+			throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "scenario is running");
+		LearningFragment ls = learningFragmentRepository.findById(activity.getLearningFragmentId()).orElse(null);
+		if(ls == null) 
+			throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "fragment not found");
+		if(LearningFragment.Type.singleton.equals(ls.getType())) {
+			List<Activity> list = activityRepository.findByLearningFragmentId(activity.getLearningFragmentId());
+			if(list.size() > 0) {
+				throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "too many activities");
+			}
+		}
+		activityRepository.save(activity);
+		return activity;
+	}
+	
 	private boolean isLearningModuleRunning(String moduleId) {
 		LearningModule db = learningModuleRepository.findById(moduleId).orElse(null);
 		if(db != null) {

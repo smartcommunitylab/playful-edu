@@ -73,7 +73,7 @@ public class ActivityController extends PlayfulController {
 	public Activity create(@RequestBody Activity activity) throws Exception {
 		if(securityHelper.hasRole(activity.getDomainId(), Role.domain) ||
 				entityManager.checkEducatorFragment(activity.getLearningFragmentId())) {
-			return activityRepository.save(activity);
+			return dataManager.createActivity(activity);
 		}
 		throw new UnauthorizedException("role not found");
 	}
