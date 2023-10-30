@@ -139,6 +139,7 @@ public class DataManager {
 					learningScenarioRepository.save(ls);
 				}
 			});
+			learnerRepository.deleteById(id);
 		}
 		return learner;
 	}
@@ -197,6 +198,9 @@ public class DataManager {
 				toRemove.forEach(learnerId -> {
 					removeLearningScenarioRun(learningScenario.getId(), learnerId);
 				});
+				//update learners list
+				lsDb.setLearners(learningScenario.getLearners());
+				learningScenarioRepository.save(lsDb);
 			} else {
 				learningScenario.setRunning(false);
 				learningScenarioRepository.save(learningScenario);
